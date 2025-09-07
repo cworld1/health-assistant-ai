@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: Copyright (c) 2024-2025, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+SPDX-FileCopyrightText: Copyright (c) 2024-2025, Health Assistant AI Project. All rights reserved.
 SPDX-License-Identifier: Apache-2.0
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,167 +15,283 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 
-![NVIDIA NeMo Agent Toolkit](./docs/source/_static/banner.png "NeMo Agent toolkit banner image")
+![Health Assistant AI](./docs/source/_static/banner.png "Health Assistant AI banner image")
 
-# NVIDIA NeMo Agent Toolkit
+# Health Assistant AI
 
 <!-- vale off (due to hyperlinks) -->
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GitHub Release](https://img.shields.io/github/v/release/NVIDIA/NeMo-Agent-Toolkit)](https://github.com/NVIDIA/NeMo-Agent-Toolkit/releases)
-[![PyPI version](https://img.shields.io/pypi/v/nvidia-nat)](https://pypi.org/project/nvidia-nat/)
-[![PyPI Downloads](https://static.pepy.tech/badge/nvidia-nat)](https://pepy.tech/projects/nvidia-nat)
-[![GitHub issues](https://img.shields.io/github/issues/NVIDIA/NeMo-Agent-Toolkit)](https://github.com/NVIDIA/NeMo-Agent-Toolkit/issues)
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/NVIDIA/NeMo-Agent-Toolkit)](https://github.com/NVIDIA/NeMo-Agent-Toolkit/pulls)
-[![GitHub Repo stars](https://img.shields.io/github/stars/NVIDIA/NeMo-Agent-Toolkit)](https://github.com/NVIDIA/NeMo-Agent-Toolkit)
-[![GitHub forks](https://img.shields.io/github/forks/NVIDIA/NeMo-Agent-Toolkit)](https://github.com/NVIDIA/NeMo-Agent-Toolkit/network/members)
+[![GitHub Release](https://img.shields.io/github/v/release/cworld1/health-assistant-ai)](https://github.com/cworld1/health-assistant-ai/releases)
+[![PyPI version](https://img.shields.io/pypi/v/health-assistant-ai)](https://pypi.org/project/health-assistant-ai/)
+[![GitHub issues](https://img.shields.io/github/issues/cworld1/health-assistant-ai)](https://github.com/cworld1/health-assistant-ai/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/cworld1/health-assistant-ai)](https://github.com/cworld1/health-assistant-ai/pulls)
+[![GitHub Repo stars](https://img.shields.io/github/stars/cworld1/health-assistant-ai)](https://github.com/cworld1/health-assistant-ai)
+
 <!-- vale on -->
 
-NVIDIA NeMo Agent toolkit is a flexible, lightweight, and unifying library that allows you to easily connect existing enterprise agents to data sources and tools across any framework.
+Health Assistant AI is a comprehensive AI-powered health consultation platform that provides personalized health advice, intelligent symptom analysis, medication guidance, and wellness management services. Built on advanced machine learning technologies, it serves as your personal health companion for informed decision-making.
 
-> [!NOTE]
-> NeMo Agent toolkit was previously known as the Agent Intelligence (AIQ) toolkit, and <!-- vale off -->AgentIQ<!-- vale on -->. The library was renamed to better reflect the purpose of the toolkit and to align with the NVIDIA NeMo family of products. The core technologies, performance and roadmap remain unchanged and the API is fully compatible with previous release. Please refer to the [Migration Guide](./docs/source/resources/migration-guide.md) for more information.
+> [!IMPORTANT] > **Medical Disclaimer**: This system provides health information and educational content only. It is not intended to replace professional medical advice, diagnosis, or treatment. Always consult with qualified healthcare providers for medical concerns. In case of emergency, contact your local emergency services immediately.
 
-## ✨ Key Features
+## ✨ Core Features
 
-- 🧩 [**Framework Agnostic:**](./docs/source/quick-start/installing.md#framework-integrations) NeMo Agent toolkit works side-by-side and around existing agentic frameworks, such as [LangChain](https://www.langchain.com/), [LlamaIndex](https://www.llamaindex.ai/), [CrewAI](https://www.crewai.com/), and [Microsoft Semantic Kernel](https://learn.microsoft.com/en-us/semantic-kernel/), as well as customer enterprise frameworks and simple Python agents. This allows you to use your current technology stack without replatforming. NeMo Agent toolkit complements any existing agentic framework or memory tool you're using and isn't tied to any specific agentic framework, long-term memory, or data source.
+- 🏥 **Intelligent Symptom Analysis**: Advanced AI algorithms analyze user-described symptoms to provide preliminary health assessments and recommendations for appropriate care levels.
 
-- 🔁 [**Reusability:**](./docs/source/extend/sharing-components.md) Every agent, tool, and agentic workflow in this library exists as a function call that works together in complex software applications. The composability between these agents, tools, and workflows allows you to build once and reuse in different scenarios.
+- 💊 **Medication Information System**: Comprehensive database providing detailed information about medications, including effects, contraindications, dosages, and drug interactions.
 
-- ⚡ [**Rapid Development:**](docs/source/tutorials/customize-a-workflow.md) Start with a pre-built agent, tool, or workflow, and customize it to your needs. This allows you and your development teams to move quickly if you're already developing with agents.
+- 🍎 **Personalized Nutrition Planning**: AI-driven dietary recommendations, nutritional analysis, calorie tracking, and customized meal planning based on individual health profiles.
 
-- 📈 [**Profiling:**](./docs/source/workflows/profiler.md) Use the profiler to profile entire workflows down to the tool and agent level, track input/output tokens and timings, and identify bottlenecks. While we encourage you to wrap (decorate) every tool and agent to get the most out of the profiler, you have the freedom to integrate your tools, agents, and workflows to whatever level you want. You start small and go to where you believe you'll see the most value and expand from there.
+- 🏃 **Fitness & Exercise Guidance**: Tailored workout plans, exercise recommendations, and activity tracking based on user fitness levels and health conditions.
 
-- 🔎 [**Observability:**](./docs/source/workflows/observe/index.md) Monitor and debug your workflows with dedicated integrations for popular observability platforms such as Phoenix, Weave, and Langfuse, plus compatibility with OpenTelemetry-based observability platforms. Track performance, trace execution flows, and gain insights into your agent behaviors.
+- 📊 **Health Metrics Monitoring**: Track vital health indicators including blood pressure, glucose levels, weight, heart rate, and other biomarkers with trend analysis.
 
-- 🧪 [**Evaluation System:**](./docs/source/workflows/evaluate.md) Validate and maintain accuracy of agentic workflows with built-in evaluation tools.
+- 🚨 **Emergency Health Response**: Real-time identification of critical health situations with first aid guidance and emergency contact assistance.
 
-- 💬 [**User Interface:**](./docs/source/quick-start/launching-ui.md) Use the NeMo Agent toolkit UI chat interface to interact with your agents, visualize output, and debug workflows.
+- 👩‍⚕️ **Medical Knowledge Base**: Access to evidence-based medical information, disease databases, and health educational resources from trusted medical sources.
 
-- 🔗 [**Full MCP Support:**](./docs/source/workflows/mcp/index.md) Compatible with [Model Context Protocol (MCP)](https://modelcontextprotocol.io/). You can use NeMo Agent toolkit as an [MCP client](./docs/source/workflows/mcp/mcp-client.md) to connect to and use tools served by remote MCP servers. You can also use NeMo Agent toolkit as an [MCP server](./docs/source/workflows/mcp/mcp-server.md) to publish tools via MCP.
+- 🔐 **Privacy & Security**: Enterprise-grade security ensuring complete protection of personal health information with HIPAA-compliant data handling.
 
-With NeMo Agent toolkit, you can move quickly, experiment freely, and ensure reliability across all your agent-driven projects.
+- 💬 **Conversational Interface**: Natural language processing for intuitive health consultations and easy-to-understand explanations.
 
-## 🚀 Installation
+- 📱 **Multi-Platform Access**: Seamless experience across web, mobile, and desktop platforms with cloud synchronization.
 
-Before you begin using NeMo Agent Toolkit, ensure that you have Python 3.11 or 3.12 installed on your system.
+## 🚀 Quick Start
 
-### Stable Version
+### Prerequisites
 
-To install the latest stable version of NeMo Agent Toolkit, run the following command:
+- Python 3.11 or higher
+- Internet connection for AI model access
+- Optional: Healthcare provider API keys for enhanced features
 
-```bash
-pip install nvidia-nat
-```
-
-NeMo Agent Toolkit has many optional dependencies which can be installed with the core package. Optional dependencies are grouped by framework and can be installed with the core package. For example, to install the LangChain plugin, run the following:
+### Installation
 
 ```bash
-pip install nvidia-nat[langchain] # For LangChain
+# Install the stable version
+pip install health-assistant-ai
+
+# For development with all optional dependencies
+pip install health-assistant-ai[all]
+
+# Framework-specific installations
+pip install health-assistant-ai[medical]  # Medical databases
+pip install health-assistant-ai[nutrition]  # Nutrition analysis
+pip install health-assistant-ai[fitness]  # Fitness tracking
 ```
 
-Or for all optional dependencies:
+### Basic Usage
 
-```bash
-pip install nvidia-nat[all]
-```
-
-The full list of optional dependencies can be found [here](./docs/source/quick-start/installing.md#framework-integrations).
-
-### From Source (For Running Examples)
-
-To run the examples, it's recommended to clone the repository and install from source. For instructions on how to do this, see the [Installation from Source](./docs/source/quick-start/installing.md#installation-from-source) guide.
-
-### Development Version
-
-More information on how to install the latest development version and contribute to the project can be found in the [Contributing](./docs/source/resources/contributing.md) guide.
-
-## 🌟 Hello World Example
-
-1. Ensure you have set the `NVIDIA_API_KEY` environment variable to allow the example to use NVIDIA NIMs. An API key can be obtained by visiting [`build.nvidia.com`](https://build.nvidia.com/) and creating an account.
+1. **Set up your environment**:
 
    ```bash
-   export NVIDIA_API_KEY=<your_api_key>
+   export HEALTH_AI_API_KEY=<your_api_key>
+   export MEDICAL_DB_API_KEY=<medical_database_key>  # Optional
    ```
 
-2. Create the NeMo Agent toolkit workflow configuration file. This file will define the agents, tools, and workflows that will be used in the example. Save the following as `workflow.yaml`:
+2. **Create a basic health consultation workflow** (`health_config.yaml`):
 
    ```yaml
-   functions:
-      # Add a tool to search wikipedia
-      wikipedia_search:
-         _type: wiki_search
-         max_results: 2
+   health_services:
+     symptom_analyzer:
+       _type: symptom_analysis
+       confidence_threshold: 0.7
+       emergency_keywords:
+         ["chest pain", "difficulty breathing", "severe bleeding"]
+
+     medication_checker:
+       _type: drug_interaction
+       database: "fda_approved"
+       check_allergies: true
 
    llms:
-      # Tell NeMo Agent toolkit which LLM to use for the agent
-      nim_llm:
-         _type: nim
-         model_name: meta/llama-3.1-70b-instruct
-         temperature: 0.0
+     health_llm:
+       _type: medical_llm
+       model_name: "health-assistant/medical-llama-7b"
+       temperature: 0.1
+       safety_mode: true
 
    workflow:
-      # Use an agent that 'reasons' and 'acts'
-      _type: react_agent
-      # Give it access to our wikipedia search tool
-      tool_names: [wikipedia_search]
-      # Tell it which LLM to use
-      llm_name: nim_llm
-      # Make it verbose
-      verbose: true
-      # Retry up to 3 times
-      parse_agent_response_max_retries: 3
+     _type: health_consultation_agent
+     services: [symptom_analyzer, medication_checker]
+     llm_name: health_llm
+     privacy_mode: strict
+     emergency_contacts: true
    ```
 
-3. Run the Hello World example using the `nat` CLI and the `workflow.yaml` file.
-
+3. **Run a health consultation**:
    ```bash
-   nat run --config_file workflow.yaml --input "List five subspecies of Aardvarks"
+   health-ai consult --config health_config.yaml --input "I've been experiencing headaches and fatigue for the past week"
    ```
 
-   This will run the workflow and output the results to the console.
+## 🌟 Example Use Cases
 
-   ```console
-   Workflow Result:
-   ['Here are five subspecies of Aardvarks:\n\n1. Orycteropus afer afer (Southern aardvark)\n2. O. a. adametzi  Grote, 1921 (Western aardvark)\n3. O. a. aethiopicus  Sundevall, 1843\n4. O. a. angolensis  Zukowsky & Haltenorth, 1957\n5. O. a. erikssoni  Lönnberg, 1906']
-   ```
+### Symptom Analysis
 
-## 📚 Additional Resources
+```python
+from health_assistant import HealthConsultant
 
- * 📖 [Documentation](https://docs.nvidia.com/nemo/agent-toolkit/latest): Explore the full documentation for NeMo Agent toolkit.
- * 🧭 [Get Started Guide](./docs/source/quick-start/installing.md): Set up your environment and start building with NeMo Agent toolkit.
- * 🧪 [Examples](./examples/README.md): Explore examples of NeMo Agent toolkit workflows located in the [`examples`](./examples) directory of the source repository.
- * 🛠️ [Create and Customize NeMo Agent toolkit Workflows](docs/source/tutorials/customize-a-workflow.md): Learn how to create and customize NeMo Agent toolkit workflows.
- * 🎯 [Evaluate with NeMo Agent toolkit](./docs/source/workflows/evaluate.md): Learn how to evaluate your NeMo Agent toolkit workflows.
- * 🆘 [Troubleshooting](./docs/source/troubleshooting.md): Get help with common issues.
+consultant = HealthConsultant()
+result = consultant.analyze_symptoms(
+    symptoms=["headache", "fever", "sore throat"],
+    duration="3 days",
+    severity="moderate",
+    patient_age=30,
+    patient_gender="female"
+)
+print(result.assessment)
+```
 
-## 📊 Component Overview
+### Medication Information
 
-The following diagram illustrates the key components of NeMo Agent toolkit and how they interact. It provides a high-level view of the architecture, including agents, plugins, workflows, and user interfaces. Use this as a reference to understand how to integrate and extend NeMo Agent toolkit in your projects.
+```python
+medication_info = consultant.get_medication_info(
+    drug_name="ibuprofen",
+    patient_weight=70,
+    existing_medications=["lisinopril"]
+)
+print(medication_info.interactions)
+```
 
-![NeMo Agent toolkit Components Diagram](docs/source/_static/gitdiagram.png)
+### Nutrition Planning
+
+```python
+nutrition_plan = consultant.create_nutrition_plan(
+    goals=["weight_loss", "heart_health"],
+    dietary_restrictions=["vegetarian"],
+    target_calories=1800,
+    duration_weeks=12
+)
+```
+
+## 🏥 Health Modules
+
+### Core Medical Services
+
+- **Symptom Analysis Engine**: Advanced pattern recognition for symptom interpretation
+- **Drug Interaction Checker**: Comprehensive medication safety verification
+- **Vital Signs Monitor**: Real-time health metrics analysis
+- **Emergency Response System**: Critical situation identification and response
+
+### Wellness & Prevention
+
+- **Preventive Care Scheduler**: Automated health checkup reminders
+- **Vaccination Tracker**: Immunization schedule management
+- **Health Risk Assessment**: Personalized risk factor analysis
+- **Lifestyle Optimization**: Evidence-based wellness recommendations
+
+### Data Integration
+
+- **EHR Compatibility**: Integration with Electronic Health Records
+- **Wearable Device Sync**: Fitness tracker and smartwatch integration
+- **Lab Results Analysis**: Medical test result interpretation
+- **Telemedicine Bridge**: Healthcare provider communication tools
+
+## 📊 Architecture Overview
+
+```
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│   User Interface│    │  AI Processing   │    │ Medical Database│
+│   • Web App     │◄──►│  • Symptom AI    │◄──►│ • Drug Info     │
+│   • Mobile App  │    │  • Medical NLP   │    │ • Disease DB    │
+│   • API         │    │  • Safety Check  │    │ • Guidelines    │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
+│ Security Layer  │    │ Analytics Engine │    │ External APIs   │
+│ • Encryption    │    │ • Health Trends  │    │ • Medical APIs  │
+│ • Access Control│    │ • Outcome Track  │    │ • Emergency Svc │
+│ • Audit Logs    │    │ • ML Training    │    │ • Pharmacies    │
+└─────────────────┘    └──────────────────┘    └─────────────────┘
+```
 
 ## 🛣️ Roadmap
 
-- [ ] Integrate with [NeMo DataFlywheel](https://github.com/NVIDIA-AI-Blueprints/data-flywheel) for continuous model improvement from production data.
-- [ ] Add support for [Google ADK](https://google.github.io/adk-docs/) framework.
-- [ ] Add an agent optimizer to auto-tune hyperparameters and prompts to maximize performance.
-- [ ] MCP authorization and streamable HTTP support.
-- [ ] Integration with [NeMo Guardrails](https://github.com/NVIDIA/NeMo-Guardrails) to secure any function in an agent workflow.
-- [ ] End-to-end acceleration using intelligent integrations with [NVIDIA Dynamo](https://github.com/ai-dynamo/dynamo).
+### Phase 1: Core Health Services (Current)
 
-## 💬 Feedback
+- [x] Basic symptom analysis
+- [x] Medication information lookup
+- [x] Health metrics tracking
+- [x] Emergency response system
 
-We would love to hear from you! Please file an issue on [GitHub](https://github.com/NVIDIA/NeMo-Agent-Toolkit/issues) if you have any feedback or feature requests.
+### Phase 2: Advanced AI Features (Q2 2025)
 
-## 🤝 Acknowledgements
+- [ ] Predictive health modeling
+- [ ] Personalized treatment recommendations
+- [ ] Multi-language support for global health access
+- [ ] Integration with major EHR systems
 
-We would like to thank the following open source projects that made NeMo Agent toolkit possible:
+### Phase 3: Ecosystem Expansion (Q3 2025)
 
-- [CrewAI](https://github.com/crewAIInc/crewAI)
-- [FastAPI](https://github.com/tiangolo/fastapi)
-- [LangChain](https://github.com/langchain-ai/langchain)
-- [Llama-Index](https://github.com/run-llama/llama_index)
-- [Mem0ai](https://github.com/mem0ai/mem0)
-- [Ragas](https://github.com/explodinggradients/ragas)
-- [Semantic Kernel](https://github.com/microsoft/semantic-kernel)
-- [uv](https://github.com/astral-sh/uv)
+- [ ] Healthcare provider network integration
+- [ ] Insurance claim assistance
+- [ ] Chronic disease management programs
+- [ ] Mental health and wellness modules
+
+### Phase 4: Research & Innovation (Q4 2025)
+
+- [ ] Clinical trial matching
+- [ ] Genomic health analysis
+- [ ] AI-powered drug discovery insights
+- [ ] Population health analytics
+
+## 🔒 Privacy & Security
+
+Health Assistant AI prioritizes user privacy and data security:
+
+- **End-to-End Encryption**: All health data is encrypted in transit and at rest
+- **HIPAA Compliance**: Full adherence to healthcare privacy regulations
+- **Minimal Data Collection**: Only essential health information is processed
+- **User Control**: Complete control over data sharing and retention
+- **Regular Security Audits**: Continuous security assessments and improvements
+- **Local Processing**: Sensitive computations performed locally when possible
+
+## 📚 Documentation & Resources
+
+- 📖 [Complete Documentation](./docs): Comprehensive guides and API reference
+- 🏥 [Medical Guidelines](./docs/medical): Evidence-based medical protocols
+- 🔧 [Integration Guide](./docs/integration): Healthcare system integration
+- 🧪 [Examples](./examples): Sample implementations and use cases
+- 🆘 [Support](./docs/support): Help, FAQ, and troubleshooting
+- 📊 [Clinical Validation](./docs/validation): Research and validation studies
+
+## 🤝 Contributing
+
+We welcome contributions from healthcare professionals, developers, and researchers:
+
+- **Medical Professionals**: Help improve clinical accuracy and guidelines
+- **Developers**: Contribute to platform features and integrations
+- **Researchers**: Share insights on health AI and validation studies
+- **Translators**: Help make health AI accessible globally
+
+See our [Contributing Guide](./CONTRIBUTING.md) for detailed information.
+
+## 📜 Legal & Compliance
+
+This project complies with healthcare regulations including:
+
+- HIPAA (Health Insurance Portability and Accountability Act)
+- GDPR (General Data Protection Regulation)
+- FDA Software as Medical Device guidelines
+- Medical device safety standards (ISO 13485)
+
+## 💬 Community & Support
+
+- 🐛 [Report Issues](https://github.com/cworld1/health-assistant-ai/issues)
+- 💡 [Feature Requests](https://github.com/cworld1/health-assistant-ai/discussions)
+- 💬 [Community Chat](https://discord.gg/health-assistant-ai)
+- 📧 [Contact Us](mailto:support@health-assistant-ai.org)
+
+## 🏆 Acknowledgments
+
+Special thanks to the medical and technology communities:
+
+- World Health Organization (WHO) for global health guidelines
+- FDA for regulatory guidance on AI in healthcare
+- Open medical databases and research institutions
+- Healthcare AI research community
+- Privacy and security frameworks for healthcare data
+
+---
+
+**Remember**: Your health is precious. While AI can provide valuable insights, always consult with qualified healthcare professionals for medical decisions. Health Assistant AI is here to inform and support, not replace professional medical care.
