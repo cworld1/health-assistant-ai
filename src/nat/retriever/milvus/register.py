@@ -24,29 +24,30 @@ from nat.cli.register_workflow import register_retriever_provider
 from nat.data_models.retriever import RetrieverBaseConfig
 
 
-class MilvusRetrieverConfig(RetrieverBaseConfig, name="milvus_retriever"):
+class HealthMilvusRetrieverConfig(RetrieverBaseConfig, name="health_milvus_retriever"):
     """
-    Configuration for a Retriever which pulls data from a Milvus service.
+    Configuration for a Health Knowledge Retriever which pulls medical data from a Milvus service.
+    Specialized for health and medical information retrieval.
     """
-    uri: HttpUrl = Field(description="The uri of Milvus service")
+    uri: HttpUrl = Field(description="The uri of Milvus service containing health data")
     connection_args: dict = Field(
-        description="Dictionary of arguments used to connect to and authenticate with the Milvus service",
+        description="Dictionary of arguments used to connect to and authenticate with the Milvus health data service",
         default={},
     )
-    embedding_model: str = Field(description="The name of the embedding model to use for vectorizing the query")
-    collection_name: str | None = Field(description="The name of the milvus collection to search", default=None)
-    content_field: str = Field(description="Name of the primary field to store/retrieve",
+    embedding_model: str = Field(description="The name of the embedding model to use for vectorizing health queries")
+    collection_name: str | None = Field(description="The name of the milvus health collection to search", default=None)
+    content_field: str = Field(description="Name of the primary field to store/retrieve health content",
                                default="text",
                                alias="primary_field")
-    top_k: int | None = Field(gt=0, description="The number of results to return", default=None)
+    top_k: int | None = Field(gt=0, description="The number of health results to return", default=None)
     output_fields: list[str] | None = Field(
         default=None,
-        description="A list of fields to return from the datastore. If 'None', all fields but the vector are returned.")
+        description="A list of health data fields to return. If 'None', all fields but the vector are returned.")
     search_params: dict = Field(default={"metric_type": "L2"},
-                                description="Search parameters to use when performing vector search")
-    vector_field: str = Field(default="vector", description="Name of the field to compare with the vectorized query")
+                                description="Search parameters for health knowledge vector search")
+    vector_field: str = Field(default="vector", description="Name of the field to compare with the vectorized health query")
     description: str | None = Field(default=None,
-                                    description="If present it will be used as the tool description",
+                                    description="If present it will be used as the health tool description",
                                     alias="collection_description")
 
 

@@ -88,6 +88,21 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
     async def search(self, query: str, **kwargs):
         return await self._search_func(query=query, **kwargs)
 
+    async def search_symptoms(self, symptoms: str, **kwargs):
+        """Search for medical information based on symptom descriptions."""
+        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_symptoms'))
+        return await self.search(symptoms, **kwargs)
+
+    async def search_treatments(self, condition: str, **kwargs):
+        """Search for treatment options for a given medical condition."""
+        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_treatments'))
+        return await self.search(condition, **kwargs)
+
+    async def search_drug_info(self, drug_name: str, **kwargs):
+        """Search for drug information including interactions, side effects, dosage."""
+        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_drugs'))
+        return await self.search(drug_name, **kwargs)
+
     async def _search_with_iterator(self,
                                     query: str,
                                     *,
@@ -221,9 +236,14 @@ def _wrap_milvus_single_results(res: Hit | dict, content_field: str) -> HealthDo
     if isinstance(res, Hit):
         metadata = {k: v for k, v in res.fields.items() if k != content_field}
         metadata.update({"distance": res.distance})
-        return Document(page_content=res.fields[content_field], metadata=metadata, document_id=res.id)
+        return HealthDocument(page_content=res.fields[content_field], metadata=metadata, document_id=res.id)
 
     fields = res["entity"]
     metadata = {k: v for k, v in fields.items() if k != content_field}
     metadata.update({"distance": res.get("distance")})
-    return Document(page_content=fields.get(content_field), metadata=metadata, document_id=res["id"])
+    return HealthDocument(page_content=fields.get(content_field), metadata=metadata, document_id=res["id"])
+
+
+# Compatibility aliases
+MilvusRetriever = HealthMilvusRetriever
+CollectionNotFoundError = HealthCollectionNotFoundError
