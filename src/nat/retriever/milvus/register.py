@@ -29,54 +29,105 @@ class HealthMilvusRetrieverConfig(RetrieverBaseConfig, name="health_milvus_retri
     Configuration for a Health Knowledge Retriever which pulls medical data from a Milvus service.
     Specialized for health and medical information retrieval.
     """
+
     uri: HttpUrl = Field(description="The uri of Milvus service containing health data")
     connection_args: dict = Field(
         description="Dictionary of arguments used to connect to and authenticate with the Milvus health data service",
         default={},
     )
-    embedding_model: str = Field(description="The name of the embedding model to use for vectorizing health queries")
-    collection_name: str | None = Field(description="The name of the milvus health collection to search", default=None)
-    content_field: str = Field(description="Name of the primary field to store/retrieve health content",
-                               default="text",
-                               alias="primary_field")
-    top_k: int | None = Field(gt=0, description="The number of health results to return", default=None)
+    embedding_model: str = Field(
+        description="The name of the embedding model to use for vectorizing health queries"
+    )
+    collection_name: str | None = Field(
+        description="The name of the milvus health collection to search", default=None
+    )
+    content_field: str = Field(
+        description="Name of the primary field to store/retrieve health content",
+        default="text",
+        alias="primary_field",
+    )
+    top_k: int | None = Field(
+        gt=0, description="The number of health results to return", default=None
+    )
     output_fields: list[str] | None = Field(
         default=None,
-        description="A list of health data fields to return. If 'None', all fields but the vector are returned.")
-    search_params: dict = Field(default={"metric_type": "L2"},
-                                description="Search parameters for health knowledge vector search")
-    vector_field: str = Field(default="vector", description="Name of the field to compare with the vectorized health query")
-    description: str | None = Field(default=None,
-                                    description="If present it will be used as the health tool description",
-                                    alias="collection_description")
+        description="A list of health data fields to return. If 'None', all fields but the vector are returned.",
+    )
+    search_params: dict = Field(
+        default={"metric_type": "L2"},
+        description="Search parameters for health knowledge vector search",
+    )
+    vector_field: str = Field(
+        default="vector",
+        description="Name of the field to compare with the vectorized health query",
+    )
+    description: str | None = Field(
+        default=None,
+        description="If present it will be used as the health tool description",
+        alias="collection_description",
+    )
 
 
-@register_retriever_provider(config_type=MilvusRetrieverConfig)
-async def milvus_retriever(retriever_config: MilvusRetrieverConfig, builder: Builder):
-    yield RetrieverProviderInfo(config=retriever_config,
-                                description="An adapter for a Miluvs data store to use with a Retriever Client")
+@register_retriever_provider(config_type=HealthMilvusRetrieverConfig)
+async def health_milvus_retriever(
+    retriever_config: HealthMilvusRetrieverConfig, builder: Builder
+):
+    yield RetrieverProviderInfo(
+        config=retriever_config,
+        description="An adapter for a Milvus health data store to use with a Health Knowledge Retriever Client",
+    )
 
 
-@register_retriever_client(config_type=MilvusRetrieverConfig, wrapper_type=None)
-async def milvus_retriever_client(config: MilvusRetrieverConfig, builder: Builder):
+@register_retriever_client(config_type=HealthMilvusRetrieverConfig, wrapper_type=None)
+async def health_milvus_retriever_client(
+    config: HealthMilvusRetrieverConfig, builder: Builder
+):
     from pymilvus import MilvusClient
 
-    from nat.retriever.milvus.retriever import MilvusRetriever
+    from nat.retriever.milvus.retriever import HealthMilvusRetriever
 
-    embedder = await builder.get_embedder(embedder_name=config.embedding_model, wrapper_type=LLMFrameworkEnum.LANGCHAIN)
+    embedder = await builder.get_embedder(
+        embedder_name=config.embedding_model, wrapper_type=LLMFrameworkEnum.LANGCHAIN
+    )
 
     milvus_client = MilvusClient(uri=str(config.uri), **config.connection_args)
-    retriever = MilvusRetriever(
+    retriever = HealthMilvusRetriever(
         client=milvus_client,
         embedder=embedder,
         content_field=config.content_field,
     )
 
     # Using parameters in the config to set default values which can be overridden during the function call.
-    optional_fields = ["collection_name", "top_k", "output_fields", "search_params", "vector_field"]
+    optional_fields = [
+        "collection_name",
+        "top_k",
+        "output_fields",
+        "search_params",
+        "vector_field",
+    ]
     model_dict = config.model_dump()
-    optional_args = {field: model_dict[field] for field in optional_fields if model_dict[field] is not None}
+    optional_args = {
+        field: model_dict[field]
+        for field in optional_fields
+        if model_dict[field] is not None
+    }
 
     retriever.bind(**optional_args)
 
     yield retriever
+
+
+# Compatibility aliases
+MilvusRetrieverConfig = HealthMilvusRetrieverConfig
+
+
+@register_retriever_provider(config_type=MilvusRetrieverConfig)
+async def milvus_retriever(retriever_config: MilvusRetrieverConfig, builder: Builder):
+    async for result in health_milvus_retriever(retriever_config, builder):
+        yield result
+
+
+@register_retriever_client(config_type=MilvusRetrieverConfig, wrapper_type=None)
+async def milvus_retriever_client(config: MilvusRetrieverConfig, builder: Builder):
+    async for result in health_milvus_retriever_client(config, builder):
+        yield result

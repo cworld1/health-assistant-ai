@@ -55,9 +55,13 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
         self._embedder = embedder
 
         if use_iterator and "search_iterator" not in dir(self._client):
-            raise ValueError("This version of the pymilvus.MilvusClient does not support the search iterator.")
+            raise ValueError(
+                "This version of the pymilvus.MilvusClient does not support the search iterator."
+            )
 
-        self._search_func = self._search if not use_iterator else self._search_with_iterator
+        self._search_func = (
+            self._search if not use_iterator else self._search_with_iterator
+        )
         self._default_params = None
         self._bound_params = []
         self.content_field = content_field
@@ -80,7 +84,11 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
         """
         Returns a list of unbound parameters which will need to be passed to the search function.
         """
-        return [param for param in ["query", "collection_name", "top_k", "filters"] if param not in self._bound_params]
+        return [
+            param
+            for param in ["query", "collection_name", "top_k", "filters"]
+            if param not in self._bound_params
+        ]
 
     def _validate_collection(self, collection_name: str) -> bool:
         return collection_name in self._client.list_collections()
@@ -90,48 +98,62 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
 
     async def search_symptoms(self, symptoms: str, **kwargs):
         """Search for medical information based on symptom descriptions."""
-        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_symptoms'))
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_symptoms")
+        )
         return await self.search(symptoms, **kwargs)
 
     async def search_treatments(self, condition: str, **kwargs):
         """Search for treatment options for a given medical condition."""
-        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_treatments'))
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_treatments")
+        )
         return await self.search(condition, **kwargs)
 
     async def search_drug_info(self, drug_name: str, **kwargs):
         """Search for drug information including interactions, side effects, dosage."""
-        kwargs.setdefault('collection_name', kwargs.get('collection_name', 'health_drugs'))
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_drugs")
+        )
         return await self.search(drug_name, **kwargs)
 
-    async def _search_with_iterator(self,
-                                    query: str,
-                                    *,
-                                    collection_name: str,
-                                    top_k: int,
-                                    filters: str | None = None,
-                                    output_fields: list[str] | None = None,
-                                    search_params: dict | None = None,
-                                    timeout: float | None = None,
-                                    vector_field_name: str | None = "vector",
-                                    distance_cutoff: float | None = None,
-                                    **kwargs):
+    async def _search_with_iterator(
+        self,
+        query: str,
+        *,
+        collection_name: str,
+        top_k: int,
+        filters: str | None = None,
+        output_fields: list[str] | None = None,
+        search_params: dict | None = None,
+        timeout: float | None = None,
+        vector_field_name: str | None = "vector",
+        distance_cutoff: float | None = None,
+        **kwargs,
+    ):
         """
         Retrieve document chunks from a Milvus vectorstore using a search iterator, allowing for the retrieval of more
         results.
         """
-        logger.debug("MilvusRetriever searching query: %s, for collection: %s. Returning max %s results",
-                     query,
-                     collection_name,
-                     top_k)
+        logger.debug(
+            "MilvusRetriever searching query: %s, for collection: %s. Returning max %s results",
+            query,
+            collection_name,
+            top_k,
+        )
 
         if not self._validate_collection(collection_name):
-            raise HealthCollectionNotFoundError(f"Collection: {collection_name} does not exist")
+            raise HealthCollectionNotFoundError(
+                f"Collection: {collection_name} does not exist"
+            )
 
         # If no output fields are specified, return all of them
         if not output_fields:
             collection_schema = self._client.describe_collection(collection_name)
             output_fields = [
-                field["name"] for field in collection_schema.get("fields") if field["name"] != vector_field_name
+                field["name"]
+                for field in collection_schema.get("fields")
+                if field["name"] != vector_field_name
             ]
 
         search_vector = self._embedder.embed_query(query)
@@ -170,42 +192,63 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
                 return _wrap_milvus_results(results, content_field=self.content_field)
 
         except Exception as e:
-            logger.error("Exception when retrieving results from milvus for query %s: %s", query, e)
-            raise HealthRetrieverError(f"Error when retrieving documents from {collection_name} for query '{query}'") from e
+            logger.error(
+                "Exception when retrieving results from milvus for query %s: %s",
+                query,
+                e,
+            )
+            raise HealthRetrieverError(
+                f"Error when retrieving documents from {collection_name} for query '{query}'"
+            ) from e
 
-    async def _search(self,
-                      query: str,
-                      *,
-                      collection_name: str,
-                      top_k: int,
-                      filters: str | None = None,
-                      output_fields: list[str] | None = None,
-                      search_params: dict | None = None,
-                      timeout: float | None = None,
-                      vector_field_name: str | None = "vector",
-                      **kwargs):
+    async def _search(
+        self,
+        query: str,
+        *,
+        collection_name: str,
+        top_k: int,
+        filters: str | None = None,
+        output_fields: list[str] | None = None,
+        search_params: dict | None = None,
+        timeout: float | None = None,
+        vector_field_name: str | None = "vector",
+        **kwargs,
+    ):
         """
         Retrieve document chunks from a Milvus vectorstore
         """
-        logger.debug("MilvusRetriever searching query: %s, for collection: %s. Returning max %s results",
-                     query,
-                     collection_name,
-                     top_k)
+        logger.debug(
+            "MilvusRetriever searching query: %s, for collection: %s. Returning max %s results",
+            query,
+            collection_name,
+            top_k,
+        )
 
         if not self._validate_collection(collection_name):
-            raise HealthCollectionNotFoundError(f"Collection: {collection_name} does not exist")
+            raise HealthCollectionNotFoundError(
+                f"Collection: {collection_name} does not exist"
+            )
 
-        available_fields = [v.get("name") for v in self._client.describe_collection(collection_name).get("fields", {})]
+        available_fields = [
+            v.get("name")
+            for v in self._client.describe_collection(collection_name).get("fields", {})
+        ]
 
         if self.content_field not in available_fields:
-            raise ValueError(f"The specified content field: {self.content_field} is not part of the schema.")
+            raise ValueError(
+                f"The specified content field: {self.content_field} is not part of the schema."
+            )
 
         if vector_field_name not in available_fields:
-            raise ValueError(f"The specified vector field name: {vector_field_name} is not part of the schema.")
+            raise ValueError(
+                f"The specified vector field name: {vector_field_name} is not part of the schema."
+            )
 
         # If no output fields are specified, return all of them
         if not output_fields:
-            output_fields = [field for field in available_fields if field != vector_field_name]
+            output_fields = [
+                field for field in available_fields if field != vector_field_name
+            ]
 
         if self.content_field not in output_fields:
             output_fields.append(self.content_field)
@@ -226,22 +269,34 @@ class HealthMilvusRetriever(HealthKnowledgeRetriever):
 
 
 def _wrap_milvus_results(res: list[Hit], content_field: str):
-    return HealthRetrieverOutput(results=[_wrap_milvus_single_results(r, content_field=content_field) for r in res])
+    return HealthRetrieverOutput(
+        results=[
+            _wrap_milvus_single_results(r, content_field=content_field) for r in res
+        ]
+    )
 
 
 def _wrap_milvus_single_results(res: Hit | dict, content_field: str) -> HealthDocument:
     if not isinstance(res, (Hit, dict)):
-        raise ValueError(f"Milvus search returned object of type {type(res)}. Expected 'Hit' or 'dict'.")
+        raise ValueError(
+            f"Milvus search returned object of type {type(res)}. Expected 'Hit' or 'dict'."
+        )
 
     if isinstance(res, Hit):
         metadata = {k: v for k, v in res.fields.items() if k != content_field}
         metadata.update({"distance": res.distance})
-        return HealthDocument(page_content=res.fields[content_field], metadata=metadata, document_id=res.id)
+        return HealthDocument(
+            page_content=res.fields[content_field],
+            metadata=metadata,
+            document_id=res.id,
+        )
 
     fields = res["entity"]
     metadata = {k: v for k, v in fields.items() if k != content_field}
     metadata.update({"distance": res.get("distance")})
-    return HealthDocument(page_content=fields.get(content_field), metadata=metadata, document_id=res["id"])
+    return HealthDocument(
+        page_content=fields.get(content_field), metadata=metadata, document_id=res["id"]
+    )
 
 
 # Compatibility aliases
