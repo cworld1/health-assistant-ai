@@ -20,22 +20,28 @@ from pydantic import ConfigDict
 from pydantic import Field
 
 
-class MemoryItem(BaseModel):
+class HealthMemoryItem(BaseModel):
     """
-    Represents a single memory item consisting of structured content and associated metadata.
+    Represents a single health consultation memory item consisting of structured medical content and associated metadata.
 
     Attributes
     ----------
     conversation : list[dict[str, str]]
-        A list of dictionaries, each containing string key-value pairs.
-    user_id : str
-        Unique identifier for this MemoryItem's user.
-    tags : list[str]
-        A list of strings representing tags attached to the item.
+        A list of dictionaries containing health consultation exchanges.
+    patient_id : str
+        Unique identifier for this HealthMemoryItem's patient.
+    health_tags : list[str]
+        A list of strings representing health-related tags (symptoms, conditions, medications).
     metadata : dict[str, typing.Any]
-        Metadata providing context and utility for management operations.
-    memory : str or None
-        Optional memory string. Helpful when returning a memory.
+        Health metadata providing medical context and consultation management.
+    health_summary : str or None
+        Optional health consultation summary. Helpful when returning patient history.
+    medical_category : str or None
+        Medical category such as 'symptoms', 'treatment', 'medication', 'follow_up'.
+    consultation_date : str or None
+        Date of the health consultation.
+    severity_level : str or None
+        Severity level: 'low', 'medium', 'high', 'critical'.
     """
     # yapf: disable
     model_config = ConfigDict(
@@ -44,27 +50,33 @@ class MemoryItem(BaseModel):
                 {
                     "conversation": [
                         {
-                            "role": "user",
-                            "content": "Hi, I'm Alex. I'm a vegetarian and I'm allergic to nuts."
+                            "role": "patient",
+                            "content": "Hi, I'm experiencing headaches and fatigue for the past 3 days."
                         },
                         {
-                            "role": "assistant",
-                            "content": "Hello Alex! I've noted that you're a vegetarian and have a nut allergy."
+                            "role": "health_assistant",
+                            "content": "I understand you're experiencing headaches and fatigue. Can you describe the severity and any triggers?"
                         }
                     ],
-                    "user_id": "user_abc",
-                    "tags": ["diet", "allergy"],
+                    "patient_id": "patient_abc123",
+                    "health_tags": ["headache", "fatigue", "symptoms"],
                     "metadata": {
                         "key_value_pairs": {
-                            "type": "profile",
-                            "relevance": "high"
+                            "type": "symptom_consultation",
+                            "relevance": "high",
+                            "consultation_duration": "15min"
                         }
-                    }
+                    },
+                    "medical_category": "symptoms",
+                    "consultation_date": "2025-09-07",
+                    "severity_level": "medium"
                 },
                 {
-                    "memory": "User prefers expensive hotels and is vegan.",
-                    "user_id": "user_abc",
-                    "tags": ["hotel", "restaurant"]
+                    "health_summary": "Patient has history of migraines and takes ibuprofen as needed.",
+                    "patient_id": "patient_abc123",
+                    "health_tags": ["migraine", "ibuprofen", "medication_history"],
+                    "medical_category": "medication",
+                    "severity_level": "low"
                 }
             ]
         },
@@ -75,38 +87,49 @@ class MemoryItem(BaseModel):
     )
     # yapf: enable
     conversation: list[dict[str, str]] | None = Field(
-        description="List of conversation messages. Each message must have a \"role\" "
-        "key (user or assistant. It must also have a \"content\" key.",
+        description="List of health consultation messages. Each message must have a \"role\" "
+        "key (patient or health_assistant) and a \"content\" key with medical information.",
         default=None)
-    tags: list[str] = Field(default_factory=list, description="List of tags applied to the item.")
-    metadata: dict[str, typing.Any] = Field(description="Metadata about the memory item.", default={})
-    user_id: str = Field(description="The user's ID.")
-    memory: str | None = Field(default=None)
+    health_tags: list[str] = Field(default_factory=list, description="List of health-related tags applied to the consultation.")
+    metadata: dict[str, typing.Any] = Field(description="Health metadata about the consultation.", default={})
+    patient_id: str = Field(description="The patient's unique ID.")
+    health_summary: str | None = Field(default=None, description="Summary of the health consultation.")
+    medical_category: str | None = Field(default=None, description="Medical category: symptoms, treatment, medication, follow_up.")
+    consultation_date: str | None = Field(default=None, description="Date of the health consultation.")
+    severity_level: str | None = Field(default=None, description="Severity level: low, medium, high, critical.")
 
 
-class SearchMemoryInput(BaseModel):
+class SearchHealthMemoryInput(BaseModel):
     """
-    Represents a search memory input structure.
+    Represents a search health memory input structure.
     """
     model_config = ConfigDict(json_schema_extra={
         "example": {
-            "query": "What is the user's preferred programming language?",
-            "top_k": 1,
-            "user_id": "user_abc",
+            "query": "What medications is the patient currently taking?",
+            "top_k": 5,
+            "patient_id": "patient_abc123",
+            "medical_category": "medication"
         }
     })
 
-    query: str = Field(description="Search query for which to retrieve memory.")  # noqa: E501
-    top_k: int = Field(description="Maximum number of memories to return")
-    user_id: str = Field(description="ID of the user to search for.")
+    query: str = Field(description="Health search query for which to retrieve medical history.")
+    top_k: int = Field(description="Maximum number of health memories to return")
+    patient_id: str = Field(description="ID of the patient to search for.")
+    medical_category: str | None = Field(default=None, description="Optional medical category filter.")
 
 
-class DeleteMemoryInput(BaseModel):
+class DeleteHealthMemoryInput(BaseModel):
     """
-    Represents a delete memory input structure.
+    Represents a delete health memory input structure.
     """
-    model_config = ConfigDict(json_schema_extra={"example": {"user_id": "user_abc", }})
+    model_config = ConfigDict(json_schema_extra={"example": {"patient_id": "patient_abc123", }})
 
-    user_id: str = Field(description="ID of the user to delete memory for. Careful when using "
+    patient_id: str = Field(description="ID of the patient to delete health memory for. Careful when using "
                          "this tool; make sure you use the "
-                         "username present in the conversation.")
+                         "patient ID present in the consultation.")
+
+
+# Compatibility aliases
+MemoryItem = HealthMemoryItem
+SearchMemoryInput = SearchHealthMemoryInput
+DeleteMemoryInput = DeleteHealthMemoryInput

@@ -13,8 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-NAT Memory Module
+Health Assistant Memory Module
 
 This package provides foundational classes and interfaces
-for managing text-based memory in NAT's LLM-based agents.
+for managing health consultation memory and patient history
+in the Health Assistant's AI-powered medical consultation system.
 """
+
+from .models import HealthMemoryItem, SearchHealthMemoryInput, DeleteHealthMemoryInput
+from .interfaces import HealthMemoryEditor
+
+# Compatibility aliases
+from .models import MemoryItem, SearchMemoryInput, DeleteMemoryInput
+from .interfaces import MemoryEditor
+
+__all__ = [
+    "HealthMemoryItem",
+    "SearchHealthMemoryInput", 
+    "DeleteHealthMemoryInput",
+    "HealthMemoryEditor",
+    # Compatibility aliases
+    "MemoryItem",
+    "SearchMemoryInput",
+    "DeleteMemoryInput", 
+    "MemoryEditor"
+]

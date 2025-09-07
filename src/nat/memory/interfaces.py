@@ -15,169 +15,71 @@
 
 from abc import ABC
 from abc import abstractmethod
-from collections.abc import Callable
 
-from .models import MemoryItem
+from .models import HealthMemoryItem
 
 
-class MemoryEditor(ABC):
+class HealthMemoryEditor(ABC):
     """
-    Abstract interface for editing and
-    retrieving memory items.
+    Abstract interface for editing and retrieving health-related memory items.
 
-    A MemoryEditor is responsible for adding, searching, and
-    removing MemoryItems.
+    A HealthMemoryEditor is responsible for adding, searching, and
+    removing health consultation memories and patient interaction history.
 
-    Implementations may integrate with
-    vector stores or other indexing backends.
+    Implementations may integrate with healthcare-focused vector stores 
+    or other specialized medical indexing backends.
     """
 
     @abstractmethod
-    async def add_items(self, items: list[MemoryItem]) -> None:
+    async def add_health_items(self, items: list[HealthMemoryItem]) -> None:
         """
-        Insert multiple MemoryItems into the memory.
+        Insert multiple health-related MemoryItems into the patient memory.
 
         Args:
-            items (list[MemoryItem]): The items to be added.
+            items (list[HealthMemoryItem]): The health consultation items to be added.
         """
         raise NotImplementedError
 
     @abstractmethod
-    async def search(self, query: str, top_k: int = 5, **kwargs) -> list[MemoryItem]:
+    async def search_health_history(self, query: str, top_k: int = 5, **kwargs) -> list[HealthMemoryItem]:
         """
-        Retrieve items relevant to the given query.
-        Relevance criteria depend on implementation.
+        Retrieve health consultation items relevant to the given medical query.
+        Relevance criteria depend on medical context and patient history.
 
         Args:
-            query (str): The query string to match.
-            top_k (int): Maximum number of items to return.
-            kwargs (dict): Keyword arguments to pass to the search method.
+            query (str): The health query string to match.
+            top_k (int): Maximum number of health items to return.
+            kwargs (dict): Keyword arguments for medical search filtering.
 
         Returns:
-            list[MemoryItem]: The most relevant MemoryItems.
+            list[HealthMemoryItem]: The most relevant health consultation items.
         """
         raise NotImplementedError
 
     @abstractmethod
-    async def remove_items(self, **kwargs) -> None:
+    async def remove_health_items(self, **kwargs) -> None:
         """
-        Remove items. Additional parameters
+        Remove health consultation items. Additional parameters
         needed for deletion can be specified in keyword arguments.
 
         Args:
-            kwargs (dict): Keyword arguments to pass to the remove-items method.
+            kwargs (dict): Keyword arguments for specifying deletion criteria.
         """
         raise NotImplementedError
 
+    # Compatibility aliases for backward compatibility
+    async def add_items(self, items: list[HealthMemoryItem]) -> None:
+        """Legacy method name for backward compatibility."""
+        return await self.add_health_items(items)
 
-class MemoryIOBase(ABC):
-    """
-    Base abstract class for I/O operations
-    on memory, providing a common interface for
+    async def search(self, query: str, top_k: int = 5, **kwargs) -> list[HealthMemoryItem]:
+        """Legacy method name for backward compatibility."""
+        return await self.search_health_history(query, top_k, **kwargs)
 
-    MemoryReader and MemoryWriter to interact
-    with a MemoryEditor.
-
-    Concrete subclasses should hold a
-    reference to a MemoryEditor instance.
-    """
-
-    def __init__(self, editor: MemoryEditor) -> None:
-        self._editor = editor
+    async def remove_items(self, **kwargs) -> None:
+        """Legacy method name for backward compatibility."""
+        return await self.remove_health_items(**kwargs)
 
 
-class MemoryReader(MemoryIOBase):
-    """
-    Responsible for retrieving MemoryItems
-    from the MemoryEditor based on context or queries.
-    """
-
-    @abstractmethod
-    async def retrieve(self, context: str, top_k: int = 5) -> list[MemoryItem]:
-        """
-        Retrieve a subset of
-        MemoryItems relevant to the provided context.
-
-        Args:
-            context (str): A string representing
-            the current user context or query.
-            top_k (int): Maximum number of items to return.
-
-        Returns:
-            list[MemoryItem]: Relevant MemoryItems.
-        """
-        raise NotImplementedError
-
-
-class MemoryWriter(MemoryIOBase):
-    """
-    Responsible for converting new observations
-    (textual inputs) into MemoryItems andstoring
-    them via the MemoryEditor.
-    """
-
-    @abstractmethod
-    async def write(self, observation: str, context: str | None = None) -> list[MemoryItem]:
-        """
-        Process the given observation and store the resulting MemoryItems.
-
-        Args:
-            observation (str): The new textual input to record.
-            context (Optional[str]): Additional
-            context that might influence how the observation is stored.
-
-        Returns:
-            list[MemoryItem]: The newly created MemoryItems.
-        """
-        raise NotImplementedError
-
-
-class MemoryManager(ABC):
-    """
-    Manages the lifecycle of the stored
-    memory by applying policies such as summarization,
-    reflection, forgetting, and mergingn
-    to ensure long-term coherence and relevance.
-    """
-
-    @abstractmethod
-    async def summarize(self) -> None:
-        """
-        Summarize long or numerous MemoryItems into a more compact form.
-        This may remove the original items and store a new summary item.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    async def reflect(self) -> None:
-        """
-        Generate higher-level insights or
-        abstractions from existing MemoryItems.
-        This may call out to an LLM or other
-        logic to produce conceptual memory.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    async def forget(self, criteria: Callable[[MemoryItem], bool]) -> None:
-        """
-        Remove MemoryItems that are no
-        longer relevant or have low importance.
-
-        Args:
-            criteria (Callable[[MemoryItem], bool]): A function that
-            returns True for items to forget.
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    async def merge(self, criteria: Callable[[MemoryItem, MemoryItem], bool]) -> None:
-        """
-        Merge similar or redundant MemoryItems
-        into a smaller set of more concise items.
-
-        Args:
-            criteria (Callable[[MemoryItem, MemoryItem], bool]): A function
-            that determines which items can be merged.
-        """
-        raise NotImplementedError
+# Compatibility aliases for backward compatibility
+MemoryEditor = HealthMemoryEditor
