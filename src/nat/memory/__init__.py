@@ -29,12 +29,12 @@ from .interfaces import MemoryEditor
 
 __all__ = [
     "HealthMemoryItem",
-    "SearchHealthMemoryInput", 
+    "SearchHealthMemoryInput",
     "DeleteHealthMemoryInput",
     "HealthMemoryEditor",
     # Compatibility aliases
     "MemoryItem",
     "SearchMemoryInput",
-    "DeleteMemoryInput", 
-    "MemoryEditor"
+    "DeleteMemoryInput",
+    "MemoryEditor",
 ]

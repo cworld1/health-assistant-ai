@@ -43,6 +43,7 @@ class HealthMemoryItem(BaseModel):
     severity_level : str or None
         Severity level: 'low', 'medium', 'high', 'critical'.
     """
+
     # yapf: disable
     model_config = ConfigDict(
         json_schema_extra={
@@ -87,46 +88,77 @@ class HealthMemoryItem(BaseModel):
     )
     # yapf: enable
     conversation: list[dict[str, str]] | None = Field(
-        description="List of health consultation messages. Each message must have a \"role\" "
-        "key (patient or health_assistant) and a \"content\" key with medical information.",
-        default=None)
-    health_tags: list[str] = Field(default_factory=list, description="List of health-related tags applied to the consultation.")
-    metadata: dict[str, typing.Any] = Field(description="Health metadata about the consultation.", default={})
+        description='List of health consultation messages. Each message must have a "role" '
+        'key (patient or health_assistant) and a "content" key with medical information.',
+        default=None,
+    )
+    health_tags: list[str] = Field(
+        default_factory=list,
+        description="List of health-related tags applied to the consultation.",
+    )
+    metadata: dict[str, typing.Any] = Field(
+        description="Health metadata about the consultation.", default={}
+    )
     patient_id: str = Field(description="The patient's unique ID.")
-    health_summary: str | None = Field(default=None, description="Summary of the health consultation.")
-    medical_category: str | None = Field(default=None, description="Medical category: symptoms, treatment, medication, follow_up.")
-    consultation_date: str | None = Field(default=None, description="Date of the health consultation.")
-    severity_level: str | None = Field(default=None, description="Severity level: low, medium, high, critical.")
+    health_summary: str | None = Field(
+        default=None, description="Summary of the health consultation."
+    )
+    medical_category: str | None = Field(
+        default=None,
+        description="Medical category: symptoms, treatment, medication, follow_up.",
+    )
+    consultation_date: str | None = Field(
+        default=None, description="Date of the health consultation."
+    )
+    severity_level: str | None = Field(
+        default=None, description="Severity level: low, medium, high, critical."
+    )
 
 
 class SearchHealthMemoryInput(BaseModel):
     """
     Represents a search health memory input structure.
     """
-    model_config = ConfigDict(json_schema_extra={
-        "example": {
-            "query": "What medications is the patient currently taking?",
-            "top_k": 5,
-            "patient_id": "patient_abc123",
-            "medical_category": "medication"
-        }
-    })
 
-    query: str = Field(description="Health search query for which to retrieve medical history.")
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "query": "What medications is the patient currently taking?",
+                "top_k": 5,
+                "patient_id": "patient_abc123",
+                "medical_category": "medication",
+            }
+        }
+    )
+
+    query: str = Field(
+        description="Health search query for which to retrieve medical history."
+    )
     top_k: int = Field(description="Maximum number of health memories to return")
     patient_id: str = Field(description="ID of the patient to search for.")
-    medical_category: str | None = Field(default=None, description="Optional medical category filter.")
+    medical_category: str | None = Field(
+        default=None, description="Optional medical category filter."
+    )
 
 
 class DeleteHealthMemoryInput(BaseModel):
     """
     Represents a delete health memory input structure.
     """
-    model_config = ConfigDict(json_schema_extra={"example": {"patient_id": "patient_abc123", }})
 
-    patient_id: str = Field(description="ID of the patient to delete health memory for. Careful when using "
-                         "this tool; make sure you use the "
-                         "patient ID present in the consultation.")
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "patient_id": "patient_abc123",
+            }
+        }
+    )
+
+    patient_id: str = Field(
+        description="ID of the patient to delete health memory for. Careful when using "
+        "this tool; make sure you use the "
+        "patient ID present in the consultation."
+    )
 
 
 # Compatibility aliases

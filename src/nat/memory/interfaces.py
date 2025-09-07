@@ -26,7 +26,7 @@ class HealthMemoryEditor(ABC):
     A HealthMemoryEditor is responsible for adding, searching, and
     removing health consultation memories and patient interaction history.
 
-    Implementations may integrate with healthcare-focused vector stores 
+    Implementations may integrate with healthcare-focused vector stores
     or other specialized medical indexing backends.
     """
 
@@ -41,7 +41,9 @@ class HealthMemoryEditor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def search_health_history(self, query: str, top_k: int = 5, **kwargs) -> list[HealthMemoryItem]:
+    async def search_health_history(
+        self, query: str, top_k: int = 5, **kwargs
+    ) -> list[HealthMemoryItem]:
         """
         Retrieve health consultation items relevant to the given medical query.
         Relevance criteria depend on medical context and patient history.
@@ -72,7 +74,9 @@ class HealthMemoryEditor(ABC):
         """Legacy method name for backward compatibility."""
         return await self.add_health_items(items)
 
-    async def search(self, query: str, top_k: int = 5, **kwargs) -> list[HealthMemoryItem]:
+    async def search(
+        self, query: str, top_k: int = 5, **kwargs
+    ) -> list[HealthMemoryItem]:
         """Legacy method name for backward compatibility."""
         return await self.search_health_history(query, top_k, **kwargs)
 
