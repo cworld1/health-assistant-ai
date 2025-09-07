@@ -4,15 +4,16 @@ requires = ["setuptools >= 64", "setuptools-scm>=8"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["aiq", "nat.*"]
+include = ["health_ai", "health_assistant.*"]
 
 [tool.setuptools_scm]
 git_describe_command = "git describe --long --first-parent"
 
 [project]
-name = "nvidia-nat"
+name = "health-assistant-ai"
 dynamic = ["version"]
 dependencies = [
+  # Health-specific dependencies for medical AI functionality
   # Keep package version constraints as open as possible to avoid conflicts with other packages. Always define a minimum
   # version when adding a new package. If unsure, default to using `~=` instead of `==`. When using `~=`, use 2 digits
   # of precision in the version specifier. For example, use `~=1.2` instead of `~=1.2.3` and `~=0.1.3` instead of
@@ -20,84 +21,131 @@ dependencies = [
   # Keep sorted!!!
   "aioboto3>=11.0.0",
   "authlib~=1.3.1",
+  "bcrypt~=4.1.2",  # Password hashing for secure user accounts
+  "bioregex~=1.0.3",  # Medical text pattern matching
   "click~=8.1",
   "colorama~=0.4.6",
-  "datasets~=4.0", # workaround for uv's solver choosing different versions of datasets based on sys_platform
+  "cryptography~=43.0.0",  # Health data encryption
+  "datasets~=4.0", # Medical datasets support
   "expandvars~=1.0",
   "fastapi~=0.115.5",
+  "fhir.resources~=7.0.2",  # FHIR healthcare standard support
   "httpx~=0.27",
   "jinja2~=3.1",
   "jsonpath-ng~=1.7",
+  "langchain-community~=0.3.0",  # Medical knowledge base integration
+  "langchain-core~=0.3.0",
   "mcp~=1.13",
+  "medspacy~=1.0.0",  # Medical natural language processing
   "networkx~=3.4",
   # langchain-aws pins numpy to 1.* for Python <3.12 -- remove once package is updated
   "numpy~=1.26; python_version < '3.12'",
   "numpy~=2.3; python_version >= '3.12'",
   "openinference-semantic-conventions~=0.1.14",
   "openpyxl~=3.1",
+  "pandas~=2.2.0",  # Health data analysis
+  "pillow~=10.4.0",  # Medical image processing
   "pkce==1.0.3",
   "pkginfo~=1.12",
   "platformdirs~=4.3",
   "pydantic~=2.11",
   "pymilvus~=2.4",
   "PyYAML~=6.0",
-  "ragas~=0.2.14", # If you update ragas be sure to update github links in docs/source/workflows/evaluate.md as well
+  "ragas~=0.2.14", # Medical AI evaluation
+  "requests~=2.32.0",  # API calls for medical databases
   "rich~=13.9",
+  "scikit-learn~=1.5.0",  # Machine learning for health analysis
+  "scipy~=1.14.0",  # Scientific computing for health metrics
+  "spacy~=3.7.0",  # Advanced NLP for medical text
+  "sqlalchemy~=2.0.0",  # Health database management
   "tabulate~=0.9",
+  "transformers~=4.45.0",  # Medical AI models
   "uvicorn[standard]~=0.32.0",
-  "wikipedia~=1.4",
 ]
 requires-python = ">=3.11,<3.14"
-description = "NVIDIA NeMo Agent toolkit"
-readme = "src/nat/meta/pypi.md"
+description = "Health Assistant AI - Intelligent health consultation and medical guidance platform"
+readme = "README.md"
 license = { file = "LICENSE.md" }
-keywords = ["ai", "rag", "agents"]
+keywords = ["health", "medical", "ai", "healthcare", "consultation", "symptoms", "wellness"]
 classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Web Environment",
+  "Framework :: FastAPI",
+  "Intended Audience :: Healthcare Industry",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: Apache Software License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+  "Typing :: Typed",
 ]
-authors = [{ name = "NVIDIA Corporation" }]
-maintainers = [{ name = "NVIDIA Corporation" }]
+authors = [{ name = "Health Assistant AI Team", email = "team@health-assistant-ai.org" }]
+maintainers = [{ name = "Health Assistant AI Team", email = "support@health-assistant-ai.org" }]
 
 
 [project.optional-dependencies]
-# Optional dependencies are things that users would want to install with NAT. i.e. `uv pip install nvidia-nat[langchain]`
+# Optional dependencies for specialized health functionalities
 # Keep sorted!!!
-all = ["nvidia-nat-all"] # meta-package
-agno = ["nvidia-nat-agno"]
-crewai = ["nvidia-nat-crewai"]
-data-flywheel = ["nvidia-nat-data-flywheel"]
-ingestion = ["nvidia-nat-ingestion"] # meta-package
-langchain = ["nvidia-nat-langchain"]
-llama-index = ["nvidia-nat-llama-index"]
-mem0ai = ["nvidia-nat-mem0ai"]
-opentelemetry = ["nvidia-nat-opentelemetry"]
-phoenix = ["nvidia-nat-phoenix"]
-profiling = ["nvidia-nat-profiling"] # meta-package
-ragaai = ["nvidia-nat-ragaai"]
-mysql = ["nvidia-nat-mysql"]
-redis = ["nvidia-nat-redis"]
-s3 = ["nvidia-nat-s3"]
-semantic-kernel = ["nvidia-nat-semantic-kernel"]
-telemetry = [
-  "nvidia-nat-opentelemetry",
-  "nvidia-nat-phoenix",
-  "nvidia-nat-weave",
-  "nvidia-nat-ragaai",
+all = ["health-assistant-ai[medical,nutrition,fitness,mental-health,emergency]"] # All health modules
+medical = [
+  "fhir.resources~=7.0.2",
+  "medspacy~=1.0.0",
+  "bioregex~=1.0.3",
+  "pydicom~=2.4.0",  # Medical imaging
+  "nibabel~=5.2.0",  # Neuroimaging
 ]
-weave = ["nvidia-nat-weave"]
-zep-cloud = ["nvidia-nat-zep-cloud"]
+nutrition = [
+  "nutrient-database~=1.0.0",
+  "food-data-central~=0.2.0",
+  "calorie-tracker~=2.1.0",
+]
+fitness = [
+  "fitness-tracker~=1.5.0",
+  "workout-planner~=2.0.0",
+  "exercise-database~=1.2.0",
+]
+mental-health = [
+  "psychology-nlp~=0.8.0",
+  "mood-tracker~=1.1.0",
+  "mental-wellness~=1.0.0",
+]
+emergency = [
+  "emergency-protocols~=1.0.0",
+  "first-aid-db~=2.0.0",
+  "crisis-intervention~=1.2.0",
+]
+databases = [
+  "health-assistant-ai[mysql,redis]",
+]
+mysql = ["health-assistant-mysql"]
+redis = ["health-assistant-redis"]
+s3 = ["health-assistant-s3"]
+telemetry = [
+  "health-assistant-opentelemetry",
+  "health-assistant-monitoring",
+]
+security = [
+  "cryptography~=43.0.0",
+  "bcrypt~=4.1.2",
+  "pyjwt~=2.8.0",
+]
 
 examples = [
-  "nat_agno_personal_finance",
-  "nat_alert_triage_agent",
-  "nat_automated_description_generation",
-  "nat_email_phishing_analyzer",
-  "nat_multi_frameworks",
-  "nat_first_search_agent",
-  "nat_plot_charts",
+  "health_symptom_analyzer",
+  "health_medication_checker",
+  "health_nutrition_planner",
+  "health_fitness_tracker",
+  "health_emergency_response",
+  "health_mental_wellness",
+  "health_preventive_care",
+  "health_telemedicine_bridge",
+]
   "nat_por_to_jiratickets",
   "nat_profiler_agent",
   "nat_redact_pii",
@@ -123,74 +171,60 @@ gunicorn = [
   "gunicorn~=23.0",
 ]
 
+# Additional health-specific CLI tools
+[project.scripts]
+health-ai = "health_assistant.cli:main"
+symptom-analyzer = "health_assistant.tools.symptom_analyzer:main"
+medication-checker = "health_assistant.tools.medication_checker:main"
+nutrition-planner = "health_assistant.tools.nutrition_planner:main"
+fitness-tracker = "health_assistant.tools.fitness_tracker:main"
+emergency-response = "health_assistant.tools.emergency_response:main"
+
+[project.urls]
+Homepage = "https://github.com/cworld1/health-assistant-ai"
+Documentation = "https://health-assistant-ai.readthedocs.io/"
+Repository = "https://github.com/cworld1/health-assistant-ai.git"
+"Bug Tracker" = "https://github.com/cworld1/health-assistant-ai/issues"
+Changelog = "https://github.com/cworld1/health-assistant-ai/blob/main/CHANGELOG.md"
+"Medical Disclaimer" = "https://health-assistant-ai.org/disclaimer"
+"Privacy Policy" = "https://health-assistant-ai.org/privacy"
+
 
 [tool.uv]
 config-settings = { editable_mode = "compat" }
 
-
 [tool.uv.sources]
-# Workspace members
-nvidia-nat-all = { workspace = true }
-nvidia-nat-agno = { workspace = true }
-nvidia-nat-crewai = { workspace = true }
-nvidia-nat-data-flywheel = { workspace = true }
-nvidia-nat-ingestion = { workspace = true }
-nvidia-nat-langchain = { workspace = true }
-nvidia-nat-llama-index = { workspace = true }
-nvidia-nat-mem0ai = { workspace = true }
-nvidia-nat-mysql = { workspace = true }
-nvidia-nat-opentelemetry = { workspace = true }
-nvidia-nat-phoenix = { workspace = true }
-nvidia-nat-profiling = { workspace = true }
-nvidia-nat-ragaai = { workspace = true }
-nvidia-nat-redis = { workspace = true }
-nvidia-nat-s3 = { workspace = true }
-nvidia-nat-semantic-kernel = { workspace = true }
-nvidia-nat-test = { workspace = true }
-nvidia-nat-weave = { workspace = true }
-nvidia-nat-zep-cloud = { workspace = true }
+# Health Assistant workspace packages
+health-assistant-mysql = { workspace = true }
+health-assistant-redis = { workspace = true }
+health-assistant-s3 = { workspace = true }
+health-assistant-opentelemetry = { workspace = true }
+health-assistant-monitoring = { workspace = true }
 
-# All examples here
-nat_agno_personal_finance = { path = "examples/frameworks/agno_personal_finance", editable = true }
-nat_alert_triage_agent = { path = "examples/advanced_agents/alert_triage_agent", editable = true }
-nat_automated_description_generation = { path = "examples/custom_functions/automated_description_generation", editable = true }
-nat_email_phishing_analyzer = { path = "examples/evaluation_and_profiling/email_phishing_analyzer", editable = true }
-nat_multi_frameworks = { path = "examples/frameworks/multi_frameworks", editable = true }
-nat_first_search_agent = { path = "examples/notebooks/first_search_agent", editable = true }
-nat_plot_charts = { path = "examples/custom_functions/plot_charts", editable = true }
-nat_por_to_jiratickets = { path = "examples/HITL/por_to_jiratickets", editable = true }
-nat_profiler_agent = { path = "examples/advanced_agents/profiler_agent", editable = true }
-nat_redact_pii = { path = "examples/observability/redact_pii", editable = true }
-nat_retail_sales_agent = { path = "examples/notebooks/retail_sales_agent", editable = true }
-nat_semantic_kernel_demo = { path = "examples/frameworks/semantic_kernel_demo", editable = true }
-nat_simple_auth = { path = "examples/front_ends/simple_auth", editable = true }
-nat_simple_calculator = { path = "examples/getting_started/simple_calculator", editable = true }
-nat_simple_calculator_custom_routes = { path = "examples/front_ends/simple_calculator_custom_routes", editable = true }
-nat_simple_calculator_eval = { path = "examples/evaluation_and_profiling/simple_calculator_eval", editable = true }
-nat_simple_calculator_hitl = { path = "examples/HITL/simple_calculator_hitl", editable = true }
-nat_simple_calculator_mcp = { path = "examples/MCP/simple_calculator_mcp", editable = true }
-nat_simple_calculator_observability = { path = "examples/observability/simple_calculator_observability", editable = true }
-nat_simple_rag = { path = "examples/RAG/simple_rag", editable = true }
-nat_simple_web_query = { path = "examples/getting_started/simple_web_query", editable = true }
-nat_simple_web_query_eval = { path = "examples/evaluation_and_profiling/simple_web_query_eval", editable = true }
-nat_swe_bench = { path = "examples/evaluation_and_profiling/swe_bench", editable = true }
-nat_user_report = { path = "examples/object_store/user_report", editable = true }
-
+# Health examples
+health_symptom_analyzer = { path = "examples/medical/symptom_analyzer", editable = true }
+health_medication_checker = { path = "examples/medical/medication_checker", editable = true }
+health_nutrition_planner = { path = "examples/wellness/nutrition_planner", editable = true }
+health_fitness_tracker = { path = "examples/wellness/fitness_tracker", editable = true }
+health_emergency_response = { path = "examples/emergency/emergency_response", editable = true }
+health_mental_wellness = { path = "examples/mental_health/mental_wellness", editable = true }
+health_preventive_care = { path = "examples/preventive/preventive_care", editable = true }
+health_telemedicine_bridge = { path = "examples/telemedicine/telemedicine_bridge", editable = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]
 exclude = ["packages/compat"]
 
 [dependency-groups]
-# Dependency groups are only for developers to aid in managing dependencies local to a dev machine.
+# Dependency groups for health assistant development
 dev = [
   "asgi-lifespan~=2.1",
   "httpx-sse~=0.4",
   "ipython~=8.31",
   "myst-parser~=4.0",
   "nbsphinx~=0.9",
-  "nvidia-nat_test",
-  "nvidia-sphinx-theme>=0.0.7",
+  "health-assistant-test",
+  "sphinx-rtd-theme>=2.0.0",
   "pip>=24.3.1",
   "pre-commit>=4.0,<5.0",
   "pytest_httpserver==1.1.*",
@@ -212,30 +246,33 @@ dev = [
   "yapf==0.43.*",
 ]
 
-[project.entry-points.'nat.components']
-nat_agents = "nat.agent.register"
-nat_authentication = "nat.authentication.register"
-nat_embedders = "nat.embedder.register"
-nat_evaluators = "nat.eval.register"
-nat_test_time_compute = "nat.experimental.test_time_compute.register"
-nat_llms = "nat.llm.register"
-nat_object_stores = "nat.object_store.register"
-nat_observability = "nat.observability.register"
-nat_retrievers = "nat.retriever.register"
-nat_tools = "nat.tool.register"
+medical = [
+  "fhir.resources~=7.0.2",
+  "medspacy~=1.0.0",
+  "bioregex~=1.0.3",
+]
 
+[project.entry-points.'health_assistant.components']
+health_agents = "health_assistant.agent.register"
+health_authentication = "health_assistant.authentication.register"
+health_embedders = "health_assistant.embedder.register"
+health_evaluators = "health_assistant.eval.register"
+health_llms = "health_assistant.llm.register"
+health_object_stores = "health_assistant.object_store.register"
+health_observability = "health_assistant.observability.register"
+health_retrievers = "health_assistant.retriever.register"
+health_tools = "health_assistant.tool.register"
 
-[project.entry-points.'nat.front_ends']
-nat_front_ends = "nat.front_ends.register"
+[project.entry-points.'health_assistant.medical_services']
+symptom_analyzer = "health_assistant.medical.symptom_analyzer"
+medication_checker = "health_assistant.medical.medication_checker"
+emergency_response = "health_assistant.medical.emergency_response"
+health_monitoring = "health_assistant.medical.health_monitoring"
 
-
-[project.entry-points.'nat.registry_handlers']
-nat_registry_handlers = "nat.registry_handlers.register"
-
-
-[project.scripts]
-aiq = "nat.cli.main:run_cli_aiq_compat"
-nat = "nat.cli.main:run_cli"
+[project.entry-points.'health_assistant.wellness_services']
+nutrition_planner = "health_assistant.wellness.nutrition_planner"
+fitness_tracker = "health_assistant.wellness.fitness_tracker"
+mental_health = "health_assistant.wellness.mental_health"
 
 [tool.setuptools]
 include-package-data = true
@@ -244,19 +281,17 @@ include-package-data = true
 # These show up when querying `pytest --markers`
 [tool.pytest.ini_options]
 markers = [
-  "benchmark: Benchmarks",
-  "e2e: End-to-end tests",
-  "integration: Integration tests which do not use mocks and may require external services",
-  "requires_cache: Tests that require a reverse-proxy cache to be running",
-  "slow: Slow tests",
+  "benchmark: Performance benchmarks for health services",
+  "e2e: End-to-end health consultation tests",
+  "integration: Integration tests for medical databases and APIs",
+  "medical: Medical accuracy and safety tests",
+  "privacy: Privacy and security compliance tests",
+  "slow: Slow tests requiring external medical APIs",
 ]
 filterwarnings = [
-  # Ignore warnings from qdrant-client (used by mem0) with Python 3.12+ of note is that this only happens the first
-  # time the module is imported and parsed, after that the pyc files in the __pycache__ directory are used which don't
-  # trigger the warnings. In Python 3.12 this triggers a SyntaxWarning, in Python 3.11 it triggers a DeprecationWarning
-  # which unfortunately pytest is unable to filter.
-  # Remove once https://github.com/qdrant/qdrant-client/issues/983 is resolved.
+  # Health-specific warning filters
   "ignore:^invalid escape sequence:SyntaxWarning",
+  "ignore:.*medical.*:DeprecationWarning",
 ]
 testpaths = ["tests", "examples/*/tests", "packages/*/tests"]
 asyncio_mode = "auto"
