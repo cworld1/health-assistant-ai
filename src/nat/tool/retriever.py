@@ -23,40 +23,53 @@ from nat.builder.function_info import FunctionInfo
 from nat.cli.register_workflow import register_function
 from nat.data_models.component_ref import RetrieverRef
 from nat.data_models.function import FunctionBaseConfig
-from nat.retriever.interface import Retriever
-from nat.retriever.models import RetrieverError
-from nat.retriever.models import RetrieverOutput
+from nat.retriever.interface import HealthKnowledgeRetriever
+from nat.retriever.models import HealthRetrieverError
+from nat.retriever.models import HealthRetrieverOutput
 
 logger = logging.getLogger(__name__)
 
 
-class RetrieverConfig(FunctionBaseConfig, name="nat_retriever"):
+class HealthRetrieverConfig(FunctionBaseConfig, name="health_retriever"):
     """
-    Retriever tool which provides a common interface for different vectorstores. Its
-    configuration uses clients, which are the vectorstore-specific implementaiton of the retriever interface.
+    Health Knowledge Retriever tool which provides a common interface for different health data vectorstores. Its
+    configuration uses clients, which are the vectorstore-specific implementation of the health retriever interface.
     """
-    retriever: RetrieverRef = Field(description="The retriever instance name from the workflow configuration object.")
+
+    retriever: RetrieverRef = Field(
+        description="The health retriever instance name from the workflow configuration object."
+    )
     raise_errors: bool = Field(
         default=True,
         description="If true the tool will raise exceptions, otherwise it will log them as warnings and return []",
     )
-    topic: str | None = Field(default=None, description="Used to provide a more detailed tool description to the agent")
-    description: str | None = Field(default=None, description="If present it will be used as the tool description")
+    topic: str | None = Field(
+        default=None,
+        description="Used to provide a more detailed health tool description to the agent",
+    )
+    description: str | None = Field(
+        default=None,
+        description="If present it will be used as the health tool description",
+    )
 
 
-def _get_description_from_config(config: RetrieverConfig) -> str:
+def _get_description_from_config(config: HealthRetrieverConfig) -> str:
     """
-    Generate a description of what the tool will do based on how it is configured.
+    Generate a description of what the health tool will do based on how it is configured.
     """
     description = "Retrieve document chunks{topic} which can be used to answer the provided question."
 
     _topic = f" related to {config.topic}" if config.topic else ""
 
-    return description.format(topic=_topic) if not config.description else config.description
+    return (
+        description.format(topic=_topic)
+        if not config.description
+        else config.description
+    )
 
 
-@register_function(config_type=RetrieverConfig)
-async def retriever_tool(config: RetrieverConfig, builder: Builder):
+@register_function(config_type=HealthRetrieverConfig)
+async def health_retriever_tool(config: HealthRetrieverConfig, builder: Builder):
     """
     Configure a NAT Retriever Tool which supports different clients such as Milvus and Nemo Retriever.
 
@@ -66,30 +79,34 @@ async def retriever_tool(config: RetrieverConfig, builder: Builder):
     """
 
     class RetrieverInputSchema(BaseModel):
-        query: str = Field(description="The query to be searched in the configured data store")
+        query: str = Field(
+            description="The query to be searched in the configured data store"
+        )
 
-    client: Retriever = await builder.get_retriever(config.retriever)
+    client: HealthKnowledgeRetriever = await builder.get_retriever(config.retriever)
 
-    async def _retrieve(query: str) -> RetrieverOutput:
+    async def _health_retrieve(query: str) -> HealthRetrieverOutput:
         try:
-            retrieved_context = await client.search(query=query)
-            logger.info("Retrieved %s records for query %s.", len(retrieved_context), query)
-            return retrieved_context
-
-        except RetrieverError as e:
+            return await client.search(query)
+        except HealthRetrieverError as e:
             if config.raise_errors:
-                logger.error("Retriever threw an error: %s.", e)
-                raise
-            logger.exception("Retriever threw an error: %s. Returning an empty response.", e)
-            return RetrieverOutput(results=[])
+                raise e
+            else:
+                logger.warning(
+                    "Error retrieving health documents for query: %s. Error: %s",
+                    query,
+                    e,
+                )
+            return HealthRetrieverOutput(results=[])
 
-    yield FunctionInfo.from_fn(
-        fn=_retrieve,
-        input_schema=RetrieverInputSchema,
+    yield FunctionInfo(
+        fn=_health_retrieve,
         description=_get_description_from_config(config),
     )
 
 
-# Compatibility aliases with previous releases
-AIQRetrieverConfig = RetrieverConfig
-aiq_retriever_tool = retriever_tool
+# Compatibility aliases
+RetrieverConfig = HealthRetrieverConfig
+AIQRetrieverConfig = HealthRetrieverConfig
+retriever_tool = health_retriever_tool
+aiq_retriever_tool = health_retriever_tool
