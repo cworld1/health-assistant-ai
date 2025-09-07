@@ -9,84 +9,92 @@ include = ["health_ai", "health_assistant.*"]
 [tool.setuptools_scm]
 git_describe_command = "git describe --long --first-parent"
 
+[build-system]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
 [project]
 name = "health-assistant-ai"
-dynamic = ["version"]
-dependencies = [
-  # Health-specific dependencies for medical AI functionality
-  # Keep package version constraints as open as possible to avoid conflicts with other packages. Always define a minimum
-  # version when adding a new package. If unsure, default to using `~=` instead of `==`. When using `~=`, use 2 digits
-  # of precision in the version specifier. For example, use `~=1.2` instead of `~=1.2.3` and `~=0.1.3` instead of
-  # `~=0.1.3.5`.
-  # Keep sorted!!!
-  "aioboto3>=11.0.0",
-  "authlib~=1.3.1",
-  "bcrypt~=4.1.2",  # Password hashing for secure user accounts
-  "bioregex~=1.0.3",  # Medical text pattern matching
-  "click~=8.1",
-  "colorama~=0.4.6",
-  "cryptography~=43.0.0",  # Health data encryption
-  "datasets~=4.0", # Medical datasets support
-  "expandvars~=1.0",
-  "fastapi~=0.115.5",
-  "fhir.resources~=7.0.2",  # FHIR healthcare standard support
-  "httpx~=0.27",
-  "jinja2~=3.1",
-  "jsonpath-ng~=1.7",
-  "langchain-community~=0.3.0",  # Medical knowledge base integration
-  "langchain-core~=0.3.0",
-  "mcp~=1.13",
-  "medspacy~=1.0.0",  # Medical natural language processing
-  "networkx~=3.4",
-  # langchain-aws pins numpy to 1.* for Python <3.12 -- remove once package is updated
-  "numpy~=1.26; python_version < '3.12'",
-  "numpy~=2.3; python_version >= '3.12'",
-  "openinference-semantic-conventions~=0.1.14",
-  "openpyxl~=3.1",
-  "pandas~=2.2.0",  # Health data analysis
-  "pillow~=10.4.0",  # Medical image processing
-  "pkce==1.0.3",
-  "pkginfo~=1.12",
-  "platformdirs~=4.3",
-  "pydantic~=2.11",
-  "pymilvus~=2.4",
-  "PyYAML~=6.0",
-  "ragas~=0.2.14", # Medical AI evaluation
-  "requests~=2.32.0",  # API calls for medical databases
-  "rich~=13.9",
-  "scikit-learn~=1.5.0",  # Machine learning for health analysis
-  "scipy~=1.14.0",  # Scientific computing for health metrics
-  "spacy~=3.7.0",  # Advanced NLP for medical text
-  "sqlalchemy~=2.0.0",  # Health database management
-  "tabulate~=0.9",
-  "transformers~=4.45.0",  # Medical AI models
-  "uvicorn[standard]~=0.32.0",
+dynamic = ["readme", "version"]
+description = "AI-powered health consultation platform with intelligent symptom analysis, medication guidance, and wellness management."
+license = { text = "Apache-2.0" }
+requires-python = ">=3.11"
+authors = [
+  { name = "Health Assistant AI Team" },
+  { email = "team@health-assistant-ai.org" },
 ]
-requires-python = ">=3.11,<3.14"
-description = "Health Assistant AI - Intelligent health consultation and medical guidance platform"
-readme = "README.md"
-license = { file = "LICENSE.md" }
-keywords = ["health", "medical", "ai", "healthcare", "consultation", "symptoms", "wellness"]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "Environment :: Console",
   "Environment :: Web Environment",
-  "Framework :: FastAPI",
   "Intended Audience :: Healthcare Industry",
   "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Developers",
   "License :: OSI Approved :: Apache Software License",
-  "Natural Language :: English",
   "Operating System :: OS Independent",
-  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  "Topic :: Scientific/Engineering :: Medical Science Apps.",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Medical Science Apps.",
   "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-  "Typing :: Typed",
+  "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-authors = [{ name = "Health Assistant AI Team", email = "team@health-assistant-ai.org" }]
-maintainers = [{ name = "Health Assistant AI Team", email = "support@health-assistant-ai.org" }]
+keywords = [
+  "health",
+  "medical",
+  "AI",
+  "healthcare",
+  "symptom-analysis",
+  "medication",
+  "wellness",
+  "nutrition",
+  "fitness",
+  "telemedicine",
+  "consultation",
+  "diagnosis-support",
+  "health-monitoring",
+  "HIPAA-compliant",
+]
+dependencies = [
+  "aiofiles~=24.1",
+  "click~=8.1",
+  "cryptography~=43.0",
+  "fastapi~=0.115",
+  "httpx~=0.27",
+  "jinja2~=3.1",
+  "jsonschema~=4.23",
+  "loguru~=0.7",
+  "neo4j~=5.25",
+  "numpy~=1.26",
+  "overrides~=7.7",
+  "pillow~=10.4",
+  "psycopg[binary]~=3.2",
+  "pymilvus~=2.4",
+  "pydantic~=2.9",
+  "python-dotenv~=1.0",
+  "PyYAML~=6.0",
+  "requests~=2.32",
+  "retry~=0.9",
+  "rich~=13.9",
+  "sqlalchemy~=2.0",
+  "tabulate~=0.9",
+  "typer~=0.12",
+  "urllib3~=2.2",
+  "uvicorn~=0.31",
+  "uvloop~=0.20",
+  "scikit-learn~=1.3",
+  "pandas~=2.1",
+  "matplotlib~=3.8",
+  "seaborn~=0.12",
+  "nltk~=3.8",
+  "spacy~=3.7",
+  "transformers~=4.35",
+  "torch~=2.1",
+  "langchain~=0.1",
+  "openai~=1.3",
+  "anthropic~=0.7",
+]
 
 
 [project.optional-dependencies]
@@ -146,25 +154,6 @@ examples = [
   "health_preventive_care",
   "health_telemedicine_bridge",
 ]
-  "nat_por_to_jiratickets",
-  "nat_profiler_agent",
-  "nat_redact_pii",
-  "nat_retail_sales_agent",
-  "nat_semantic_kernel_demo",
-  "nat_simple_auth",
-  "nat_simple_web_query",
-  "nat_simple_web_query_eval",
-  "nat_simple_calculator",
-  "nat_simple_calculator_custom_routes",
-  "nat_simple_calculator_eval",
-  "nat_simple_calculator_mcp",
-  "nat_simple_calculator_observability",
-  "nat_simple_calculator_hitl",
-  "nat_simple_rag",
-  "nat_swe_bench",
-  "nat_user_report",
-]
-
 
 # Optional dependency needed when use_gunicorn is set to true
 gunicorn = [
@@ -179,6 +168,9 @@ medication-checker = "health_assistant.tools.medication_checker:main"
 nutrition-planner = "health_assistant.tools.nutrition_planner:main"
 fitness-tracker = "health_assistant.tools.fitness_tracker:main"
 emergency-response = "health_assistant.tools.emergency_response:main"
+mental-wellness = "health_assistant.tools.mental_wellness:main"
+health-monitor = "health_assistant.tools.health_monitor:main"
+telemedicine = "health_assistant.tools.telemedicine:main"
 
 [project.urls]
 Homepage = "https://github.com/cworld1/health-assistant-ai"
@@ -336,16 +328,21 @@ extend-ignore = [
 combine-as-imports = true
 default-section = "third-party"
 force-single-line = true
-known-first-party = ["aiq", "nat", "nat_*", "_utils"]
+known-first-party = ["health_assistant", "health_*", "_utils"]
 known-third-party = [
-  "agno",
-  "crewai",
+  "biopython",
+  "medpy",
+  "pydicom",
+  "fhir",
   "langchain",
-  "llama_index",
-  "mem0ai",
+  "openai",
+  "anthropic",
+  "transformers",
+  "torch",
+  "scikit-learn",
+  "pandas",
+  "numpy",
   "redis",
-  "semantic_kernel",
-  "zep_cloud",
 ]
 order-by-type = true
 
