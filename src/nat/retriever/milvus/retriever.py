@@ -20,21 +20,22 @@ from langchain_core.embeddings import Embeddings
 from pymilvus import MilvusClient
 from pymilvus.client.abstract import Hit
 
-from nat.retriever.interface import Retriever
-from nat.retriever.models import Document
-from nat.retriever.models import RetrieverError
-from nat.retriever.models import RetrieverOutput
+from nat.retriever.interface import HealthKnowledgeRetriever
+from nat.retriever.models import HealthDocument
+from nat.retriever.models import HealthRetrieverError
+from nat.retriever.models import HealthRetrieverOutput
 
 logger = logging.getLogger(__name__)
 
 
-class CollectionNotFoundError(RetrieverError):
+class HealthCollectionNotFoundError(HealthRetrieverError):
     pass
 
 
-class MilvusRetriever(Retriever):
+class HealthMilvusRetriever(HealthKnowledgeRetriever):
     """
-    Client for retrieving document chunks from a Milvus vectorstore
+    Client for retrieving health knowledge chunks from a Milvus vectorstore
+    specialized for medical and health-related information.
     """
 
     def __init__(
@@ -109,7 +110,7 @@ class MilvusRetriever(Retriever):
                      top_k)
 
         if not self._validate_collection(collection_name):
-            raise CollectionNotFoundError(f"Collection: {collection_name} does not exist")
+            raise HealthCollectionNotFoundError(f"Collection: {collection_name} does not exist")
 
         # If no output fields are specified, return all of them
         if not output_fields:
@@ -155,7 +156,7 @@ class MilvusRetriever(Retriever):
 
         except Exception as e:
             logger.error("Exception when retrieving results from milvus for query %s: %s", query, e)
-            raise RetrieverError(f"Error when retrieving documents from {collection_name} for query '{query}'") from e
+            raise HealthRetrieverError(f"Error when retrieving documents from {collection_name} for query '{query}'") from e
 
     async def _search(self,
                       query: str,
@@ -177,7 +178,7 @@ class MilvusRetriever(Retriever):
                      top_k)
 
         if not self._validate_collection(collection_name):
-            raise CollectionNotFoundError(f"Collection: {collection_name} does not exist")
+            raise HealthCollectionNotFoundError(f"Collection: {collection_name} does not exist")
 
         available_fields = [v.get("name") for v in self._client.describe_collection(collection_name).get("fields", {})]
 
@@ -210,10 +211,10 @@ class MilvusRetriever(Retriever):
 
 
 def _wrap_milvus_results(res: list[Hit], content_field: str):
-    return RetrieverOutput(results=[_wrap_milvus_single_results(r, content_field=content_field) for r in res])
+    return HealthRetrieverOutput(results=[_wrap_milvus_single_results(r, content_field=content_field) for r in res])
 
 
-def _wrap_milvus_single_results(res: Hit | dict, content_field: str) -> Document:
+def _wrap_milvus_single_results(res: Hit | dict, content_field: str) -> HealthDocument:
     if not isinstance(res, (Hit, dict)):
         raise ValueError(f"Milvus search returned object of type {type(res)}. Expected 'Hit' or 'dict'.")
 
