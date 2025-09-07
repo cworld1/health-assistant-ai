@@ -23,19 +23,16 @@ __license__ = "Apache-2.0"
 __all__ = [
     # Medical services
     "SymptomAnalyzer",
-    "MedicationChecker", 
+    "MedicationChecker",
     "EmergencyResponse",
-    
     # Wellness services
     "NutritionPlanner",
     "FitnessTracker",
     "MentalWellness",
-    
     # Core systems
     "HealthConsultant",
     "HealthDatabase",
     "PrivacyManager",
-    
     # Utilities
     "HealthLogger",
     "DataValidator",
@@ -59,13 +56,16 @@ By using this system, you acknowledge that you understand these limitations
 and will seek appropriate professional medical care when needed.
 """
 
+
 def get_version():
     """Get the current version of Health Assistant AI."""
     return __version__
 
+
 def show_disclaimer():
     """Display the medical disclaimer."""
     print(MEDICAL_DISCLAIMER)
+
 
 def get_health_consultant():
     """Get a configured Health Consultant instance."""
