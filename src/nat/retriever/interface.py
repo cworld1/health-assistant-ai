@@ -19,23 +19,74 @@ from abc import abstractmethod
 from nat.retriever.models import RetrieverOutput
 
 
-class Retriever(ABC):
+class HealthKnowledgeRetriever(ABC):
     """
-    Abstract interface for interacting with data stores.
+    Abstract interface for interacting with health knowledge stores.
 
-    A Retriever is resposible for retrieving data from a configured data store.
+    A HealthKnowledgeRetriever is responsible for retrieving relevant medical information
+    from configured health data stores including medical literature, drug databases,
+    symptom databases, and treatment guidelines.
 
-    Implemntations may integrate with vector stores or other indexing backends that allow for text-based search.
+    Implementations may integrate with medical vector stores or other specialized
+    indexing backends that allow for health-related text search.
     """
 
     @abstractmethod
-    async def search(self, query: str, **kwargs) -> RetrieverOutput:
+    async def search_symptoms(self, symptoms: str, **kwargs) -> RetrieverOutput:
         """
-        Retireve max(top_k) items from the data store based on vector similarity search (implementation dependent).
+        Retrieve relevant medical information based on symptom descriptions.
 
+        Args:
+            symptoms: Description of symptoms to search for
+            **kwargs: Additional search parameters (top_k, filters, etc.)
+
+        Returns:
+            RetrieverOutput containing relevant medical information
         """
         raise NotImplementedError
 
+    @abstractmethod
+    async def search_treatments(self, condition: str, **kwargs) -> RetrieverOutput:
+        """
+        Retrieve treatment options for a given medical condition.
+
+        Args:
+            condition: Medical condition to find treatments for
+            **kwargs: Additional search parameters
+
+        Returns:
+            RetrieverOutput containing treatment information
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    async def search_drug_info(self, drug_name: str, **kwargs) -> RetrieverOutput:
+        """
+        Retrieve drug information including interactions, side effects, dosage.
+
+        Args:
+            drug_name: Name of the drug to search for
+            **kwargs: Additional search parameters
+
+        Returns:
+            RetrieverOutput containing drug information
+        """
+        raise NotImplementedError
+
+    async def search(self, query: str, **kwargs) -> RetrieverOutput:
+        """
+        General health information search method.
+
+        Args:
+            query: Health-related query
+            **kwargs: Additional search parameters
+
+        Returns:
+            RetrieverOutput containing relevant health information
+        """
+        return await self.search_symptoms(query, **kwargs)
+
 
 # Compatibility aliases with previous releases
-AIQRetriever = Retriever
+Retriever = HealthKnowledgeRetriever
+AIQRetriever = HealthKnowledgeRetriever

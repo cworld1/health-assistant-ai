@@ -24,32 +24,52 @@ from pydantic import Field
 from nat.utils.type_converter import GlobalTypeConverter
 
 
-class Document(BaseModel):
+class HealthDocument(BaseModel):
     """
-    Object representing a retrieved document/chunk from a standard NAT Retriever.
+    Object representing a retrieved health document/knowledge from a health knowledge retriever.
     """
-    page_content: str = Field(description="Primary content of the document to insert or retrieve")
-    metadata: dict[str, Any] = Field(description="Metadata dictionary attached to the Document")
-    document_id: str | None = Field(description="Unique ID for the document, if supported by the configured datastore",
-                                    default=None)
+
+    page_content: str = Field(
+        description="Primary health content including symptoms, treatments, or medical information"
+    )
+    metadata: dict[str, Any] = Field(
+        description="Health-related metadata including source, credibility, medical category"
+    )
+    document_id: str | None = Field(
+        description="Unique ID for the health document, if supported by the configured datastore",
+        default=None,
+    )
+    medical_category: str | None = Field(
+        description="Medical category such as 'symptoms', 'treatments', 'drugs', 'conditions'",
+        default=None,
+    )
+    credibility_score: float | None = Field(
+        description="Credibility score of the medical information (0.0-1.0)",
+        default=None,
+    )
+    source_type: str | None = Field(
+        description="Type of medical source: 'peer_reviewed', 'clinical_trial', 'guideline', 'database'",
+        default=None,
+    )
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> Document:
+    def from_dict(cls, data: dict[str, Any]) -> HealthDocument:
         """
-        Deserialize an Document from a dictionary representation.
+        Deserialize a HealthDocument from a dictionary representation.
 
         Args:
-            data (dict): A dictionary containing keys
-            'page_content', 'metadata', and optionally 'document_id'.
+            data (dict): A dictionary containing health document information.
 
         Returns:
-            MemoryItem: A reconstructed MemoryItem instance.
+            HealthDocument: A reconstructed HealthDocument instance.
         """
         return cls(**data)
 
 
-class RetrieverOutput(BaseModel):
-    results: list[Document] = Field(description="A list of retrieved Documents")
+class HealthRetrieverOutput(BaseModel):
+    results: list[HealthDocument] = Field(
+        description="A list of retrieved health documents"
+    )
 
     def __len__(self):
         return len(self.results)
@@ -58,20 +78,23 @@ class RetrieverOutput(BaseModel):
         return json.dumps(self.model_dump())
 
 
-class RetrieverError(Exception):
+class HealthRetrieverError(Exception):
     pass
 
 
-def retriever_output_to_dict(obj: RetrieverOutput) -> dict:
+def health_retriever_output_to_dict(obj: HealthRetrieverOutput) -> dict:
     return obj.model_dump()
 
 
-def retriever_output_to_str(obj: RetrieverOutput) -> str:
+def health_retriever_output_to_str(obj: HealthRetrieverOutput) -> str:
     return str(obj)
 
 
-GlobalTypeConverter.register_converter(retriever_output_to_dict)
-GlobalTypeConverter.register_converter(retriever_output_to_str)
+GlobalTypeConverter.register_converter(health_retriever_output_to_dict)
+GlobalTypeConverter.register_converter(health_retriever_output_to_str)
 
 # Compatibility aliases with previous releases
-AIQDocument = Document
+Document = HealthDocument
+RetrieverOutput = HealthRetrieverOutput
+RetrieverError = HealthRetrieverError
+AIQDocument = HealthDocument
