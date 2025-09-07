@@ -26,10 +26,10 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
 
-from nat.retriever.interface import Retriever
-from nat.retriever.models import Document
-from nat.retriever.models import RetrieverError
-from nat.retriever.models import RetrieverOutput
+from nat.retriever.interface import HealthKnowledgeRetriever
+from nat.retriever.models import HealthDocument
+from nat.retriever.models import HealthRetrieverError
+from nat.retriever.models import HealthRetrieverOutput
 
 logger = logging.getLogger(__name__)
 
@@ -42,29 +42,37 @@ class Collection(BaseModel):
     created_at: str
 
 
-class RetrieverPayload(BaseModel):
+class HealthRetrieverPayload(BaseModel):
     query: str
     top_k: int = Field(le=50, gt=0)
 
 
-class CollectionUnavailableError(RetrieverError):
+class HealthCollectionUnavailableError(HealthRetrieverError):
     pass
 
 
-class NemoRetriever(Retriever):
+class HealthNemoRetriever(HealthKnowledgeRetriever):
     """
-    Client for retrieving document chunks from a Nemo Retriever service.
+    Client for retrieving health knowledge chunks from a NeMo Retriever service.
+    Specialized for medical and health information retrieval.
     """
 
-    def __init__(self, uri: str | HttpUrl, timeout: int = 60, nvidia_api_key: str = None, **kwargs):
-
+    def __init__(
+        self,
+        uri: str | HttpUrl,
+        timeout: int = 60,
+        nvidia_api_key: str = None,
+        **kwargs,
+    ):
         self.base_url = str(uri)
         self.timeout = timeout
         self._search_func = self._search
-        self.api_key = nvidia_api_key if nvidia_api_key else os.getenv('NVIDIA_API_KEY')
+        self.api_key = nvidia_api_key if nvidia_api_key else os.getenv("NVIDIA_API_KEY")
         self._bound_params = []
         if not self.api_key:
-            logger.warning("No API key was specified as part of configuration or as an environment variable.")
+            logger.warning(
+                "No API key was specified as part of configuration or as an environment variable."
+            )
 
     def bind(self, **kwargs) -> None:
         """
@@ -83,19 +91,31 @@ class NemoRetriever(Retriever):
         """
         Returns a list of unbound parameters which will need to be passed to the search function.
         """
-        return [param for param in ["query", "collection_name", "top_k"] if param not in self._bound_params]
+        return [
+            param
+            for param in ["query", "collection_name", "top_k"]
+            if param not in self._bound_params
+        ]
 
     async def get_collections(self, client) -> list[Collection]:
         """
         Get a list of all available collections as pydantic `Collection` objects
         """
-        collection_response = await client.get(urljoin(self.base_url, "/v1/collections"))
+        collection_response = await client.get(
+            urljoin(self.base_url, "/v1/collections")
+        )
         collection_response.raise_for_status()
-        if not collection_response or len(collection_response.json().get('collections', [])) == 0:
-            raise CollectionUnavailableError(f"No collections available at {self.base_url}")
+        if (
+            not collection_response
+            or len(collection_response.json().get("collections", [])) == 0
+        ):
+            raise HealthCollectionUnavailableError(
+                f"No collections available at {self.base_url}"
+            )
 
         collections = [
-            Collection.model_validate(collection) for collection in collection_response.json()["collections"]
+            Collection.model_validate(collection)
+            for collection in collection_response.json()["collections"]
         ]
 
         return collections
@@ -105,12 +125,39 @@ class NemoRetriever(Retriever):
         Retrieve a collection using it's name. Will return the first collection found if the name is ambiguous.
         """
         collections = await self.get_collections(client)
-        if (collection := next((c for c in collections if c.name == collection_name), None)) is None:
-            raise CollectionUnavailableError(f"Collection {collection_name} not found")
+        if (
+            collection := next(
+                (c for c in collections if c.name == collection_name), None
+            )
+        ) is None:
+            raise HealthCollectionUnavailableError(
+                f"Collection {collection_name} not found"
+            )
         return collection
 
     async def search(self, query: str, **kwargs):
         return await self._search_func(query=query, **kwargs)
+
+    async def search_symptoms(self, symptoms: str, **kwargs):
+        """Search for medical information based on symptom descriptions."""
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_symptoms")
+        )
+        return await self.search(symptoms, **kwargs)
+
+    async def search_treatments(self, condition: str, **kwargs):
+        """Search for treatment options for a given medical condition."""
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_treatments")
+        )
+        return await self.search(condition, **kwargs)
+
+    async def search_drug_info(self, drug_name: str, **kwargs):
+        """Search for drug information including interactions, side effects, dosage."""
+        kwargs.setdefault(
+            "collection_name", kwargs.get("collection_name", "health_drugs")
+        )
+        return await self.search(drug_name, **kwargs)
 
     async def _search(
         self,
@@ -124,13 +171,17 @@ class NemoRetriever(Retriever):
         """
         output = []
         try:
-            async with httpx.AsyncClient(headers={"Authorization": f"Bearer {self.api_key}"},
-                                         timeout=self.timeout) as client:
+            async with httpx.AsyncClient(
+                headers={"Authorization": f"Bearer {self.api_key}"},
+                timeout=self.timeout,
+            ) as client:
                 collection = await self.get_collection_by_name(collection_name, client)
                 url = urljoin(self.base_url, f"/v1/collections/{collection.id}/search")
 
-                payload = RetrieverPayload(query=query, top_k=top_k)
-                response = await client.post(url, content=json.dumps(payload.model_dump(mode="python")))
+                payload = HealthRetrieverPayload(query=query, top_k=top_k)
+                response = await client.post(
+                    url, content=json.dumps(payload.model_dump(mode="python"))
+                )
 
                 logger.debug("response.status_code=%s", response.status_code)
 
@@ -143,21 +194,28 @@ class NemoRetriever(Retriever):
                 return _wrap_nemo_results(output=output, content_field="content")
 
         except Exception as e:
-            logger.error("Encountered an error when retrieving results from Nemo Retriever: %s", e)
-            raise CollectionUnavailableError(
-                f"Error when retrieving documents from {collection_name} for query '{query}'") from e
+            logger.error(
+                "Encountered an error when retrieving results from Nemo Retriever: %s",
+                e,
+            )
+            raise HealthCollectionUnavailableError(
+                f"Error when retrieving documents from {collection_name} for query '{query}'"
+            ) from e
 
 
 def _wrap_nemo_results(output: list[dict], content_field: str):
-    return RetrieverOutput(results=[_wrap_nemo_single_results(o, content_field=content_field) for o in output])
+    return HealthRetrieverOutput(
+        results=[
+            _wrap_nemo_single_results(o, content_field=content_field) for o in output
+        ]
+    )
 
 
 def _wrap_nemo_single_results(output: dict, content_field: str):
-    return Document(page_content=output[content_field],
-                    metadata={
-                        k: v
-                        for k, v in output.items() if k != content_field
-                    })
+    return HealthDocument(
+        page_content=output[content_field],
+        metadata={k: v for k, v in output.items() if k != content_field},
+    )
 
 
 def _flatten(obj: dict, output_fields: list[str]) -> list[str]:
@@ -176,15 +234,22 @@ def _flatten(obj: dict, output_fields: list[str]) -> list[str]:
         if field in output_fields:
             data.update({field: obj[field]})
 
-    data.update({k: v for k, v in obj['metadata'].items() if k in output_fields})
+    data.update({k: v for k, v in obj["metadata"].items() if k in output_fields})
     return data
 
 
-class NemoLangchainRetriever(BaseRetriever, BaseModel):
-    client: NemoRetriever
+class HealthNemoLangchainRetriever(BaseRetriever, BaseModel):
+    client: HealthNemoRetriever
 
     def _get_relevant_documents(self, query, *, run_manager, **kwargs):
         raise NotImplementedError
 
     async def _aget_relevant_documents(self, query, *, run_manager, **kwargs):
         return await self.client.search(query, **kwargs)
+
+
+# Compatibility aliases
+NemoRetriever = HealthNemoRetriever
+CollectionUnavailableError = HealthCollectionUnavailableError
+RetrieverPayload = HealthRetrieverPayload
+NemoLangchainRetriever = HealthNemoLangchainRetriever
